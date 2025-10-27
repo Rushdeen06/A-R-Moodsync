@@ -14,8 +14,33 @@ export function UserPrivacyPanel() {
   const [loading, setLoading] = useState(false);
 
   const API_ROOT = 'http://localhost:4000';
+  const isStaticGithub = typeof window !== 'undefined' && /github\.io$/.test(window.location.hostname);
 
   const fetchUser = async (secret?: any) => {
+    // In static GitHub mode, use localStorage data
+    if (isStaticGithub) {
+      setLoading(true);
+      try {
+        const userDataStr = localStorage.getItem('moodsync_user');
+        if (userDataStr) {
+          const userData = JSON.parse(userDataStr);
+          setUser({
+            id: 'static-user',
+            name: userData.name || 'User',
+            email: userData.email || 'user@example.com',
+            bio: 'Static demo user'
+          });
+          setPublicView(false); // Owner view in static mode
+        }
+      } catch (e) {
+        console.error('Failed to load static user data:', e);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // Original backend fetch logic
     setLoading(true);
     try {
       const headers: any = { 'Content-Type': 'application/json' };
@@ -34,7 +59,13 @@ export function UserPrivacyPanel() {
   };
 
   useEffect(() => {
-  fetchUser();
+    fetchUser();
+    
+    // Don't poll in static mode
+    if (isStaticGithub) {
+      return;
+    }
+
     // Re-run when the app's auth token changes
     // (we could subscribe to auth events; for simplicity poll localStorage)
     const interval = setInterval(() => {

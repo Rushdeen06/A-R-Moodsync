@@ -272,6 +272,9 @@ export default function App() {
             onLogMood={() => setCurrentScreen('mood-check-in')}
             onViewSocial={() => setCurrentScreen('social')}
             onMenuClick={() => setCurrentScreen('breathing')}
+            totalEntries={entries.length}
+            currentStreak={currentStreak}
+            weekMoodAverage={entries.slice(-7).reduce((acc, e) => acc + (e.intensity || 3), 0) / Math.max(entries.slice(-7).length, 1)}
           />
         </Suspense>
       )}

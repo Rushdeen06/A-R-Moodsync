@@ -154,7 +154,7 @@ export default function App() {
     setCurrentScreen(screen as Screen);
   };
 
-  const handleMoodSubmit = async (mood: string, note: string) => {
+  const handleMoodSubmit = async (mood: string, note: string, activities?: string[], energyLevel?: number) => {
     try {
       const intensityMap: Record<string, number> = {
         'great': 5,
@@ -165,7 +165,16 @@ export default function App() {
       };
       const intensity = intensityMap[mood] || 3;
       
-      const { entry } = await api.createMoodEntry(mood, note, intensity);
+      // Enhanced note with activities and energy level
+      let enhancedNote = note;
+      if (activities && activities.length > 0) {
+        enhancedNote += (note ? '\n' : '') + `Activities: ${activities.join(', ')}`;
+      }
+      if (energyLevel) {
+        enhancedNote += `\nEnergy: ${energyLevel}/5`;
+      }
+      
+      const { entry } = await api.createMoodEntry(mood, enhancedNote, intensity);
       const newEntry: MoodEntry = {
         ...entry,
         timestamp: new Date(entry.timestamp),

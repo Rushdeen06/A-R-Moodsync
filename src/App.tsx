@@ -1,16 +1,17 @@
-import { useState, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { MobileLoginScreen } from './components/mobile/MobileLoginScreen';
-import { MobileOnboarding } from './components/mobile/MobileOnboarding';
-import { MobileHome } from './components/mobile/MobileHome';
-import { MobileMoodCheckIn } from './components/mobile/MobileMoodCheckIn';
-import { MobileAISuggestions } from './components/mobile/MobileAISuggestions';
-import { MobileBreakBuddy } from './components/mobile/MobileBreakBuddy';
-import { MobileSocialBoard } from './components/mobile/MobileSocialBoard';
-import { MobileDashboard } from './components/mobile/MobileDashboard';
-import { MobileMoodCalendar } from './components/mobile/MobileMoodCalendar';
-import { MobileProfile } from './components/mobile/MobileProfile';
-import { MobileBreathing } from './components/mobile/MobileBreathing';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
+// Dynamically code-split infrequently used / heavier screens
+const MobileLoginScreen = lazy(() => import('./components/mobile/MobileLoginScreen').then(m => ({ default: m.MobileLoginScreen })));
+const MobileOnboarding = lazy(() => import('./components/mobile/MobileOnboarding').then(m => ({ default: m.MobileOnboarding })));
+const MobileHome = lazy(() => import('./components/mobile/MobileHome').then(m => ({ default: m.MobileHome })));
+const MobileMoodCheckIn = lazy(() => import('./components/mobile/MobileMoodCheckIn').then(m => ({ default: m.MobileMoodCheckIn })));
+const MobileAISuggestions = lazy(() => import('./components/mobile/MobileAISuggestions').then(m => ({ default: m.MobileAISuggestions })));
+const MobileBreakBuddy = lazy(() => import('./components/mobile/MobileBreakBuddy').then(m => ({ default: m.MobileBreakBuddy })));
+const MobileSocialBoard = lazy(() => import('./components/mobile/MobileSocialBoard').then(m => ({ default: m.MobileSocialBoard })));
+const MobileDashboard = lazy(() => import('./components/mobile/MobileDashboard').then(m => ({ default: m.MobileDashboard })));
+const MobileMoodCalendar = lazy(() => import('./components/mobile/MobileMoodCalendar').then(m => ({ default: m.MobileMoodCalendar })));
+const MobileProfile = lazy(() => import('./components/mobile/MobileProfile').then(m => ({ default: m.MobileProfile })));
+const MobileBreathing = lazy(() => import('./components/mobile/MobileBreathing').then(m => ({ default: m.MobileBreathing })));
+// Keep lightweight, frequently visible UI components eagerly loaded
 import { MobileBottomNav } from './components/mobile/MobileBottomNav';
 import { MobileFloatingAction } from './components/mobile/MobileFloatingAction';
 import { InstallPrompt } from './components/InstallPrompt';
@@ -244,7 +245,7 @@ export default function App() {
     <>
       <Toaster />
       
-      <AnimatePresence mode="wait">
+      <Suspense fallback={<div className="flex items-center justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-teal-600" /></div>}>
         {currentScreen === 'home' && (
           <MobileHome
             userName={user!.name.split(' ')[0]}
@@ -325,7 +326,7 @@ export default function App() {
             }}
           />
         )}
-      </AnimatePresence>
+      </Suspense>
 
       {/* Floating Action Button */}
       {showBottomNav && (

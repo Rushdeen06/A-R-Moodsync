@@ -1,0 +1,43 @@
+:root {
+  /* Base colors */
+  --primary: #4FB3C5;
+  --primary-light: #E8F6F8;
+  --primary-dark: #2D7A8B;
+  --background: #FFFFFF;
+  --foreground: #1A1A1A;
+  
+  /* Mood colors */
+  --mood-great: #D4F1E8;
+  --mood-good: #E0F7E0;
+  --mood-okay: #FFF5E1;
+  --mood-low: #FFE6E6;
+  --mood-very-low: #FFD6D6;
+  
+  /* Animation */
+  --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-duration: 0.2s;
+  
+  /* Spacing */
+  --safe-area-bottom: env(safe-area-inset-bottom, 16px);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] {
+  --primary: #5CC1D3;
+  --primary-light: #1E3D44;
+  --primary-dark: #7DCFE0;
+  --background: #121212;
+  --foreground: #FFFFFF;
+  
+  /* Mood colors dark */
+  --mood-great: #1A3B35;
+  --mood-good: #1A3B1A;
+  --mood-okay: #3B351A;
+  --mood-low: #3B1A1A;
+  --mood-very-low: #2E1515;
+}

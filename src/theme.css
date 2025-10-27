@@ -1,0 +1,45 @@
+:root {
+  color-scheme: light dark;
+}
+
+/* Light theme colors */
+:root {
+  --bg-main: #E8F6F8;
+  --bg-card: #FFFFFF;
+  --text-primary: #2D7A8B;
+  --text-secondary: #4FB3C5;
+}
+
+/* Dark theme colors */
+[data-theme="dark"] {
+  --bg-main: #1A1A1A;
+  --bg-card: #2D2D2D;
+  --text-primary: #7CC9DB;
+  --text-secondary: #4FB3C5;
+}
+
+/* Apply theme colors */
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+}
+
+.bg-white {
+  background-color: var(--bg-card) !important;
+}
+
+[style*="color: #2D7A8B"] {
+  color: var(--text-primary) !important;
+}
+
+[style*="color: #4FB3C5"] {
+  color: var(--text-secondary) !important;
+}
+
+[style*="backgroundColor: #E8F6F8"] {
+  background-color: var(--bg-main) !important;
+}
+
+[style*="backgroundColor: #F5F8FA"] {
+  background-color: var(--bg-card) !important;
+}

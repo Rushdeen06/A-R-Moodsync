@@ -1,0 +1,61 @@
+/* Theme variables */
+:root {
+  --background: #E8F6F8;
+  --text-primary: #2D7A8B;
+  --text-secondary: #4FB3C5;
+  --card-background: #FFFFFF;
+  --hover-background: #F5F8FA;
+  --border-color: #D4E9F1;
+}
+
+/* Dark theme variables */
+:root[data-theme="dark"] {
+  --background: #1A1A1A;
+  --text-primary: #7CC9DB;
+  --text-secondary: #4FB3C5;
+  --card-background: #2D2D2D;
+  --hover-background: #3D3D3D;
+  --border-color: #404040;
+}
+
+/* Apply theme variables */
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+.dark body {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+/* Card styles */
+.bg-white {
+  background-color: var(--card-background) !important;
+}
+
+.dark .bg-white {
+  background-color: var(--card-background) !important;
+}
+
+/* Text colors */
+[style*="color: #2D7A8B"] {
+  color: var(--text-primary) !important;
+}
+
+[style*="color: #4FB3C5"] {
+  color: var(--text-secondary) !important;
+}
+
+/* Background colors */
+[style*="backgroundColor: #E8F6F8"] {
+  background-color: var(--background) !important;
+}
+
+[style*="backgroundColor: #F5F8FA"] {
+  background-color: var(--hover-background) !important;
+}
+
+[style*="backgroundColor: #D4E9F1"] {
+  background-color: var(--border-color) !important;
+}

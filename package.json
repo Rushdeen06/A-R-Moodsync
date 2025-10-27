@@ -2,7 +2,7 @@
       "name": "ar-mood-sync",
       "version": "0.1.0",
       "private": true,
-      "homepage": "https://Rushdeen06.github.io/mood-sync",
+      "homepage": "https://Rushdeen06.github.io/A-R-Moodsync",
       "scripts": {
             "dev": "vite",
             "build": "vite build",

@@ -19,21 +19,13 @@ const MOODS = [
 
 export function MobileMoodCheckIn({ onSubmit, onBack }: MobileMoodCheckInProps) {
   const [selectedMood, setSelectedMood] = useState<string>('');
-  const [selectedLevel, setSelectedLevel] = useState<number>(0);
   const [note, setNote] = useState('');
 
   const handleSubmit = () => {
     if (selectedMood) {
       onSubmit(selectedMood, note);
       setSelectedMood('');
-      setSelectedLevel(0);
       setNote('');
-    }
-  };
-
-  const triggerHaptic = () => {
-    if ('vibrate' in navigator) {
-      navigator.vibrate(50);
     }
   };
 

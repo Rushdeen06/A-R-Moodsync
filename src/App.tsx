@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'framer-motion';
 import { MobileLoginScreen } from './components/mobile/MobileLoginScreen';
 import { MobileOnboarding } from './components/mobile/MobileOnboarding';
 import { MobileHome } from './components/mobile/MobileHome';

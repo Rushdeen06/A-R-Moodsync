@@ -19,7 +19,7 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
   const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
     return Notification.permission === 'granted';
   });
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
 
   // Handle notification permission
   const handleNotificationChange = async (enabled: boolean) => {

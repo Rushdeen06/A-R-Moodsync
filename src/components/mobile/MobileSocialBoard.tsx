@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { ArrowLeft, MessageCircle, Heart, TrendingUp, Users, Filter, X, Send, Smile } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { toast } from '../ui/sonner';

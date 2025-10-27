@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Download, Smartphone } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function InstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);

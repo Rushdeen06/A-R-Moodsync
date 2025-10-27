@@ -4,7 +4,7 @@
   import path from 'path';
 
   export default defineConfig({
-    base: '/A-R-Moodsync/',
+    base: process.env.NODE_ENV === 'production' ? '/A-R-Moodsync/' : '/',
     plugins: [react()],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],

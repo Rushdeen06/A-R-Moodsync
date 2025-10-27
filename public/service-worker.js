@@ -1,9 +1,17 @@
-const CACHE_NAME = 'moodsync-v1';
+// Service Worker (static demo aware) - versioned cache
+const CACHE_NAME = 'moodsync-v2';
+// Derive base path (GitHub Pages repository) from location pathname
+// If hosted at /A-R-Moodsync/, include that in cached paths.
+const BASE_PATH = self.location.pathname.split('/').slice(0,2).join('/'); // "" or "A-R-Moodsync"
+const prefix = BASE_PATH ? `/${BASE_PATH}` : '';
+// Minimal shell files; hashed chunks will be dynamically cached on fetch
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/assets/index.css',
-  '/assets/index.js',
+  `${prefix}/`,
+  `${prefix}/index.html`,
+  `${prefix}/manifest.json`,
+  // Icons
+  `${prefix}/icon-192.png`,
+  `${prefix}/icon-512.png`
 ];
 
 // Install event - cache resources
@@ -11,7 +19,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
+  console.log('[SW] Opened cache, base prefix:', prefix);
         return cache.addAll(urlsToCache);
       })
       .catch((err) => {
@@ -52,7 +60,7 @@ self.addEventListener('fetch', (event) => {
       })
       .catch(() => {
         // Return offline page if available
-        return caches.match('/index.html');
+  return caches.match(`${prefix}/index.html`);
       })
   );
 });

@@ -4,6 +4,9 @@ const REMOTE_API_BASE = `https://${projectId}.supabase.co/functions/v1/make-serv
 // Detect hosting on GitHub Pages (static, no backend)
 const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
 const isStaticGithub = typeof window !== 'undefined' && /github\.io$/.test(window.location.hostname);
+if (typeof window !== 'undefined') {
+  console.log('[API] Static GitHub mode?', isStaticGithub, 'hostname:', window.location.hostname);
+}
 // If static hosted, we will emulate API locally with fallbacks
 const API_BASE = isLocal ? 'http://localhost:4000/api' : (isStaticGithub ? '' : REMOTE_API_BASE);
 

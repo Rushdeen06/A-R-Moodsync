@@ -72,15 +72,15 @@ class ApiClient {
           'sarah@example.com': 'Sarah Connor',
           'john@example.com': 'John Doe'
         };
-        if (demoUsers[body.email]) {
-          const fakeToken = 'static-demo-token-' + btoa(body.email);
-          this.setAccessToken(fakeToken);
-          return {
-            access_token: fakeToken,
-            user: { name: demoUsers[body.email], email: body.email }
-          };
-        }
-        throw new Error('Invalid credentials (static)');
+        // In static mode, accept ANY email/password (no backend validation)
+        // If it's a known demo user, use their name; otherwise use the email
+        const userName = demoUsers[body.email] || body.email.split('@')[0];
+        const fakeToken = 'static-demo-token-' + btoa(body.email);
+        this.setAccessToken(fakeToken);
+        return {
+          access_token: fakeToken,
+          user: { name: userName, email: body.email }
+        };
       }
       if (endpoint === '/auth/signup' && options.method === 'POST') {
         const body = JSON.parse(options.body as string);

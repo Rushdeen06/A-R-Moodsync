@@ -212,7 +212,9 @@ export default function App() {
     return (
       <>
         <Toaster />
-        <MobileOnboarding onComplete={handleOnboardingComplete} />
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen" style={{backgroundColor: "#E8F6F8"}}><Loader2 className="h-8 w-8 animate-spin text-teal-600" /></div>}>
+          <MobileOnboarding onComplete={handleOnboardingComplete} />
+        </Suspense>
       </>
     );
   }
@@ -222,7 +224,9 @@ export default function App() {
     return (
       <>
         <Toaster />
-        <MobileLoginScreen onLogin={handleLogin} />
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen" style={{backgroundColor: "#E8F6F8"}}><Loader2 className="h-8 w-8 animate-spin text-teal-600" /></div>}>
+          <MobileLoginScreen onLogin={handleLogin} />
+        </Suspense>
       </>
     );
   }
@@ -241,12 +245,18 @@ export default function App() {
   const mainScreens = ['home', 'calendar', 'dashboard', 'social', 'profile'];
   const showBottomNav = mainScreens.includes(currentScreen);
 
+  const LoadingFallback = () => (
+    <div className="flex items-center justify-center py-12">
+      <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+    </div>
+  );
+
   return (
     <>
       <Toaster />
       
-      <Suspense fallback={<div className="flex items-center justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-teal-600" /></div>}>
-        {currentScreen === 'home' && (
+      {currentScreen === 'home' && (
+        <Suspense fallback={<LoadingFallback />}>
           <MobileHome
             userName={user!.name.split(' ')[0]}
             todaySuggestion={hasLoggedToday ? "Great job logging today! 🌟" : "Don't forget to check in today"}
@@ -254,24 +264,30 @@ export default function App() {
             onViewSocial={() => setCurrentScreen('social')}
             onMenuClick={() => setCurrentScreen('breathing')}
           />
-        )}
+        </Suspense>
+      )}
 
-        {currentScreen === 'calendar' && (
+      {currentScreen === 'calendar' && (
+        <Suspense fallback={<LoadingFallback />}>
           <MobileMoodCalendar
             entries={entries}
           />
-        )}
+        </Suspense>
+      )}
 
-        {currentScreen === 'dashboard' && (
+      {currentScreen === 'dashboard' && (
+        <Suspense fallback={<LoadingFallback />}>
           <MobileDashboard
             entries={entries}
             onBack={() => setCurrentScreen('home')}
             onLogMood={() => setCurrentScreen('mood-check-in')}
             onViewSuggestions={entries.length > 0 ? () => setCurrentScreen('ai-suggestions') : undefined}
           />
-        )}
+        </Suspense>
+      )}
 
-        {currentScreen === 'social' && (
+      {currentScreen === 'social' && (
+        <Suspense fallback={<LoadingFallback />}>
           <MobileSocialBoard
             entries={entries.map((e: any) => ({ 
               ...e, 
@@ -280,9 +296,11 @@ export default function App() {
             }))}
             onBack={() => setCurrentScreen('home')}
           />
-        )}
+        </Suspense>
+      )}
 
-        {currentScreen === 'profile' && (
+      {currentScreen === 'profile' && (
+        <Suspense fallback={<LoadingFallback />}>
           <MobileProfile
             userName={user!.name}
             userEmail={user!.email}
@@ -290,16 +308,20 @@ export default function App() {
             currentStreak={currentStreak}
             onLogout={handleLogout}
           />
-        )}
+        </Suspense>
+      )}
 
-        {currentScreen === 'mood-check-in' && (
+      {currentScreen === 'mood-check-in' && (
+        <Suspense fallback={<LoadingFallback />}>
           <MobileMoodCheckIn
             onSubmit={handleMoodSubmit}
             onBack={() => setCurrentScreen('home')}
           />
-        )}
+        </Suspense>
+      )}
 
-        {currentScreen === 'ai-suggestions' && (
+      {currentScreen === 'ai-suggestions' && (
+        <Suspense fallback={<LoadingFallback />}>
           <MobileAISuggestions
             latestMood={latestMood.mood}
             moodLevel={latestMood.level}
@@ -308,25 +330,29 @@ export default function App() {
             onFindBuddy={() => setCurrentScreen('break-buddy')}
             onBack={() => setCurrentScreen('home')}
           />
-        )}
+        </Suspense>
+      )}
 
-        {currentScreen === 'break-buddy' && (
+      {currentScreen === 'break-buddy' && (
+        <Suspense fallback={<LoadingFallback />}>
           <MobileBreakBuddy
             userName={user!.name}
             onBack={() => setCurrentScreen('ai-suggestions')}
             onRequestSent={handleBreakBuddyRequest}
           />
-        )}
+        </Suspense>
+      )}
 
-        {currentScreen === 'breathing' && (
+      {currentScreen === 'breathing' && (
+        <Suspense fallback={<LoadingFallback />}>
           <MobileBreathing
             onComplete={() => {
               toast.success('Great session! You completed breathing exercises 🌬️');
               setCurrentScreen('home');
             }}
           />
-        )}
-      </Suspense>
+        </Suspense>
+      )}
 
       {/* Floating Action Button */}
       {showBottomNav && (

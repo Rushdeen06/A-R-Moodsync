@@ -1,9 +1,11 @@
 import { projectId, publicAnonKey } from './supabase/info';
 
 const REMOTE_API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-310f32f3`;
-// During local development prefer the local backend express server
+// Detect hosting on GitHub Pages (static, no backend)
 const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-const API_BASE = isLocal ? 'http://localhost:4000/api' : REMOTE_API_BASE;
+const isStaticGithub = typeof window !== 'undefined' && /github\.io$/.test(window.location.hostname);
+// If static hosted, we will emulate API locally with fallbacks
+const API_BASE = isLocal ? 'http://localhost:4000/api' : (isStaticGithub ? '' : REMOTE_API_BASE);
 
 export interface MoodEntry {
   id: string;
@@ -55,13 +57,74 @@ class ApiClient {
     }
 
     const url = `${API_BASE}${endpoint}`;
-    console.log('API Request:', url, options.method || 'GET', 'Auth required:', requiresAuth);
+    console.log('API Request:', url || '(static-fallback)' , options.method || 'GET', 'Auth required:', requiresAuth);
+
+    // Static fallback: emulate certain endpoints entirely client-side
+    if (isStaticGithub) {
+      // Auth endpoints
+      if (endpoint === '/auth/signin' && options.method === 'POST') {
+        const body = JSON.parse(options.body as string);
+        const demoUsers: Record<string,string> = {
+          'demo@example.com': 'Demo User',
+          'sarah@example.com': 'Sarah Connor',
+          'john@example.com': 'John Doe'
+        };
+        if (demoUsers[body.email]) {
+          const fakeToken = 'static-demo-token-' + btoa(body.email);
+          this.setAccessToken(fakeToken);
+          return {
+            access_token: fakeToken,
+            user: { name: demoUsers[body.email], email: body.email }
+          };
+        }
+        throw new Error('Invalid credentials (static)');
+      }
+      if (endpoint === '/auth/signup' && options.method === 'POST') {
+        const body = JSON.parse(options.body as string);
+        const fakeToken = 'static-signup-token-' + btoa(body.email);
+        this.setAccessToken(fakeToken);
+        return { access_token: fakeToken, user: { name: body.name, email: body.email } };
+      }
+      // Mood creation
+      if (endpoint === '/moods' && options.method === 'POST') {
+        const body = JSON.parse(options.body as string);
+        const entry = { id: 'local-' + Date.now(), mood: body.mood, note: body.note, intensity: body.intensity, timestamp: new Date().toISOString() };
+        const existing = JSON.parse(localStorage.getItem('moodsync_entries') || '[]');
+        existing.push(entry);
+        localStorage.setItem('moodsync_entries', JSON.stringify(existing));
+        return { entry };
+      }
+      if (endpoint === '/moods' && (!options.method || options.method === 'GET')) {
+        const entries = JSON.parse(localStorage.getItem('moodsync_entries') || '[]');
+        return { entries };
+      }
+      if (/^\/moods\//.test(endpoint) && options.method === 'DELETE') {
+        const id = endpoint.split('/').pop();
+        let entries: any[] = JSON.parse(localStorage.getItem('moodsync_entries') || '[]');
+        entries = entries.filter(e => e.id !== id);
+        localStorage.setItem('moodsync_entries', JSON.stringify(entries));
+        return { success: true };
+      }
+      if (endpoint === '/settings' && (!options.method || options.method === 'GET')) {
+        const settings = JSON.parse(localStorage.getItem('moodsync_settings') || '{"remindersEnabled":false, "lastReminderTime":null}');
+        return { settings };
+      }
+      if (endpoint === '/settings' && options.method === 'PUT') {
+        const body = JSON.parse(options.body as string);
+        localStorage.setItem('moodsync_settings', JSON.stringify(body));
+        return { settings: body };
+      }
+      if (endpoint === '/health') {
+        return { status: 'static' };
+      }
+    }
 
     try {
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      });
+      if (isStaticGithub) {
+        // If we didn't early-return above, endpoint unsupported in static mode
+        throw new Error('Endpoint unsupported in static mode: ' + endpoint);
+      }
+      const response = await fetch(url, { ...options, headers });
 
       console.log('API Response status:', response.status);
 

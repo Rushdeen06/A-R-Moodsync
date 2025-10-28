@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { ArrowLeft, MessageCircle, Heart, TrendingUp, Users, Filter, X, Send, Smile } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { toast } from '../ui/sonner';
+import { useTheme } from '../../utils/ThemeProvider';
 
 interface MobileSocialBoardProps {
   entries: Array<{
@@ -26,6 +27,8 @@ const MOOD_EMOJIS: Record<string, string> = {
 };
 
 export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [showComments, setShowComments] = useState<string | null>(null);
@@ -100,57 +103,58 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -100 }}
       className="min-h-screen pb-24"
-      style={{ backgroundColor: '#E8F6F8' }}
+  style={{ backgroundColor: isDark ? '#1a1a1a' : '#E8F6F8' }}
     >
       <div className="max-w-md mx-auto">
         {/* Header with Stats */}
-        <div className="sticky top-0 z-10 p-4" style={{ backgroundColor: '#E8F6F8' }}>
+  <div className="sticky top-0 z-10 p-4" style={{ backgroundColor: isDark ? '#1a1a1a' : '#E8F6F8' }}>
           <div className="flex items-center justify-between mb-4">
-            <button onClick={onBack} className="p-2 rounded-full hover:bg-white/50 transition-colors">
-              <ArrowLeft className="w-6 h-6" style={{ color: '#2D7A8B' }} />
+            <button onClick={onBack} className="p-2 rounded-full transition-colors" style={{ backgroundColor: isDark ? '#2d2d2d' : 'transparent' }}>
+              <ArrowLeft className="w-6 h-6" style={{ color: isDark ? '#4FB3C5' : '#2D7A8B' }} />
             </button>
-            <h2 className="text-xl font-semibold" style={{ color: '#2D7A8B' }}>
+            <h2 className="text-xl font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
               Social Board
             </h2>
             <button 
               onClick={() => setShowFilters(!showFilters)}
-              className="p-2 rounded-full hover:bg-white/50 transition-colors"
+              className="p-2 rounded-full transition-colors"
+              style={{ backgroundColor: isDark ? '#2d2d2d' : 'transparent' }}
             >
-              <Filter className="w-6 h-6" style={{ color: '#2D7A8B' }} />
+              <Filter className="w-6 h-6" style={{ color: isDark ? '#4FB3C5' : '#2D7A8B' }} />
             </button>
           </div>
 
           {/* Stats Bar */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm mb-4">
+          <div className="rounded-2xl p-4 shadow-sm mb-4" style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}>
             <div className="flex justify-around">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <Users className="w-4 h-4" style={{ color: '#4FB3C5' }} />
-                  <p className="text-lg font-semibold" style={{ color: '#2D7A8B' }}>
+                  <p className="text-lg font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
                     {entries.length}
                   </p>
                 </div>
-                <p className="text-xs" style={{ color: '#4FB3C5' }}>Active Users</p>
+                <p className="text-xs" style={{ color: isDark ? '#999' : '#4FB3C5' }}>Active Users</p>
               </div>
-              <div className="h-12 w-px" style={{ backgroundColor: '#E8F6F8' }} />
+              <div className="h-12 w-px" style={{ backgroundColor: isDark ? '#3d3d3d' : '#E8F6F8' }} />
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <TrendingUp className="w-4 h-4" style={{ color: '#7DD4A8' }} />
-                  <p className="text-lg font-semibold" style={{ color: '#2D7A8B' }}>
+                  <p className="text-lg font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
                     {likedPosts.size}
                   </p>
                 </div>
-                <p className="text-xs" style={{ color: '#4FB3C5' }}>Total Likes</p>
+                <p className="text-xs" style={{ color: isDark ? '#999' : '#4FB3C5' }}>Total Likes</p>
               </div>
-              <div className="h-12 w-px" style={{ backgroundColor: '#E8F6F8' }} />
+              <div className="h-12 w-px" style={{ backgroundColor: isDark ? '#3d3d3d' : '#E8F6F8' }} />
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <MessageCircle className="w-4 h-4" style={{ color: '#FFB84D' }} />
-                  <p className="text-lg font-semibold" style={{ color: '#2D7A8B' }}>
+                  <p className="text-lg font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
                     {Object.values(comments).flat().length}
                   </p>
                 </div>
-                <p className="text-xs" style={{ color: '#4FB3C5' }}>Comments</p>
+                <p className="text-xs" style={{ color: isDark ? '#999' : '#4FB3C5' }}>Comments</p>
               </div>
             </div>
           </div>
@@ -161,10 +165,11 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-white rounded-2xl p-4 shadow-sm mb-4"
+              className="rounded-2xl p-4 shadow-sm mb-4"
+              style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
             >
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-semibold" style={{ color: '#2D7A8B' }}>Filters</p>
+                <p className="text-sm font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>Filters</p>
                 <button onClick={() => setShowFilters(false)}>
                   <X className="w-5 h-5" style={{ color: '#4FB3C5' }} />
                 </button>
@@ -178,8 +183,8 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                     onClick={() => setSelectedCategory('')}
                     className="px-3 py-1 rounded-full cursor-pointer text-xs"
                     style={{
-                      backgroundColor: selectedCategory === '' ? '#4FB3C5' : '#E8F6F8',
-                      color: selectedCategory === '' ? 'white' : '#2D7A8B',
+                      backgroundColor: selectedCategory === '' ? '#4FB3C5' : (isDark ? '#3d3d3d' : '#E8F6F8'),
+                      color: selectedCategory === '' ? 'white' : (isDark ? '#ccc' : '#2D7A8B'),
                     }}
                   >
                     All
@@ -190,8 +195,8 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                       onClick={() => setSelectedCategory(category)}
                       className="px-3 py-1 rounded-full cursor-pointer text-xs"
                       style={{
-                        backgroundColor: selectedCategory === category ? '#4FB3C5' : '#E8F6F8',
-                        color: selectedCategory === category ? 'white' : '#2D7A8B',
+                        backgroundColor: selectedCategory === category ? '#4FB3C5' : (isDark ? '#3d3d3d' : '#E8F6F8'),
+                        color: selectedCategory === category ? 'white' : (isDark ? '#ccc' : '#2D7A8B'),
                       }}
                     >
                       {category}
@@ -208,8 +213,8 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                     onClick={() => setSortBy('recent')}
                     className="px-3 py-1 rounded-full cursor-pointer text-xs"
                     style={{
-                      backgroundColor: sortBy === 'recent' ? '#4FB3C5' : '#E8F6F8',
-                      color: sortBy === 'recent' ? 'white' : '#2D7A8B',
+                      backgroundColor: sortBy === 'recent' ? '#4FB3C5' : (isDark ? '#3d3d3d' : '#E8F6F8'),
+                      color: sortBy === 'recent' ? 'white' : (isDark ? '#ccc' : '#2D7A8B'),
                     }}
                   >
                     Recent
@@ -218,8 +223,8 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                     onClick={() => setSortBy('popular')}
                     className="px-3 py-1 rounded-full cursor-pointer text-xs"
                     style={{
-                      backgroundColor: sortBy === 'popular' ? '#4FB3C5' : '#E8F6F8',
-                      color: sortBy === 'popular' ? 'white' : '#2D7A8B',
+                      backgroundColor: sortBy === 'popular' ? '#4FB3C5' : (isDark ? '#3d3d3d' : '#E8F6F8'),
+                      color: sortBy === 'popular' ? 'white' : (isDark ? '#ccc' : '#2D7A8B'),
                     }}
                   >
                     Popular
@@ -239,7 +244,8 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-3xl p-4 shadow-sm"
+                className="rounded-3xl p-4 shadow-sm"
+                style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
               >
                 {/* Post Header */}
                 <div className="flex items-start gap-3 mb-3">
@@ -251,7 +257,7 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="font-semibold truncate" style={{ color: '#2D7A8B' }}>
+                      <p className="font-semibold truncate" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
                         {entry.userName}
                       </p>
                       <span className="text-xs flex-shrink-0" style={{ color: '#4FB3C5' }}>
@@ -275,13 +281,13 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
 
                 {/* Post Content */}
                 {entry.note && (
-                  <p className="text-sm mb-4 leading-relaxed" style={{ color: '#2D7A8B' }}>
+                  <p className="text-sm mb-4 leading-relaxed" style={{ color: isDark ? '#ccc' : '#2D7A8B' }}>
                     {entry.note}
                   </p>
                 )}
 
                 {/* Engagement Stats */}
-                <div className="flex items-center gap-4 mb-3 pb-3 border-b" style={{ borderColor: '#E8F6F8' }}>
+                <div className="flex items-center gap-4 mb-3 pb-3 border-b" style={{ borderColor: isDark ? '#3d3d3d' : '#E8F6F8' }}>
                   <div className="flex items-center gap-1 text-xs" style={{ color: '#4FB3C5' }}>
                     <Heart className="w-4 h-4 fill-current" style={{ color: likedPosts.has(entry.id) ? '#FF6B9D' : '#4FB3C5' }} />
                     <span>{likedPosts.has(entry.id) ? '1' : '0'} likes</span>
@@ -298,8 +304,8 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                     onClick={() => handleLike(entry.id)}
                     className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl transition-all active:scale-95"
                     style={{
-                      backgroundColor: likedPosts.has(entry.id) ? '#FFE5F0' : '#E8F6F8',
-                      color: likedPosts.has(entry.id) ? '#FF6B9D' : '#2D7A8B',
+                      backgroundColor: likedPosts.has(entry.id) ? '#FFE5F0' : (isDark ? '#3d3d3d' : '#E8F6F8'),
+                      color: likedPosts.has(entry.id) ? '#FF6B9D' : (isDark ? '#fff' : '#2D7A8B'),
                     }}
                   >
                     <Heart
@@ -315,8 +321,8 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                     onClick={() => setShowComments(showComments === entry.id ? null : entry.id)}
                     className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl transition-all active:scale-95"
                     style={{
-                      backgroundColor: showComments === entry.id ? '#E8DFF5' : '#E8F6F8',
-                      color: showComments === entry.id ? '#9B7FD8' : '#2D7A8B',
+                      backgroundColor: showComments === entry.id ? '#E8DFF5' : (isDark ? '#3d3d3d' : '#E8F6F8'),
+                      color: showComments === entry.id ? '#9B7FD8' : (isDark ? '#fff' : '#2D7A8B'),
                     }}
                   >
                     <MessageCircle className="w-4 h-4" />
@@ -331,7 +337,7 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     className="mt-4 pt-4 border-t"
-                    style={{ borderColor: '#E8F6F8' }}
+                    style={{ borderColor: isDark ? '#3d3d3d' : '#E8F6F8' }}
                   >
                     {/* Existing Comments */}
                     {comments[entry.id]?.map((comment, idx) => (
@@ -342,11 +348,11 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                         >
                           <Smile className="w-4 h-4" />
                         </div>
-                        <div className="flex-1 rounded-2xl p-3" style={{ backgroundColor: '#F5F8FA' }}>
-                          <p className="text-xs font-semibold mb-1" style={{ color: '#2D7A8B' }}>
+                        <div className="flex-1 rounded-2xl p-3" style={{ backgroundColor: isDark ? '#3d3d3d' : '#F5F8FA' }}>
+                          <p className="text-xs font-semibold mb-1" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
                             You
                           </p>
-                          <p className="text-sm" style={{ color: '#2D7A8B' }}>
+                          <p className="text-sm" style={{ color: isDark ? '#ccc' : '#2D7A8B' }}>
                             {comment.text}
                           </p>
                           <p className="text-xs mt-1" style={{ color: '#4FB3C5' }}>
@@ -366,8 +372,8 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                         placeholder="Write a comment..."
                         className="flex-1 px-4 py-2 rounded-full text-sm outline-none"
                         style={{
-                          backgroundColor: '#F5F8FA',
-                          color: '#2D7A8B',
+                          backgroundColor: isDark ? '#3d3d3d' : '#F5F8FA',
+                          color: isDark ? '#fff' : '#2D7A8B',
                         }}
                       />
                       <button
@@ -384,17 +390,17 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
               </motion.div>
             ))
           ) : (
-            <div className="bg-white rounded-3xl p-12 text-center shadow-sm">
+            <div className="rounded-3xl p-12 text-center shadow-sm" style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}>
               <div
                 className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
-                style={{ backgroundColor: '#E8F6F8' }}
+                style={{ backgroundColor: isDark ? '#3d3d3d' : '#E8F6F8' }}
               >
                 <Users className="w-10 h-10" style={{ color: '#4FB3C5' }} />
               </div>
-              <p className="text-lg mb-2" style={{ color: '#2D7A8B' }}>
+              <p className="text-lg mb-2 font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
                 No posts yet
               </p>
-              <p className="text-sm" style={{ color: '#4FB3C5' }}>
+              <p className="text-sm" style={{ color: isDark ? '#999' : '#4FB3C5' }}>
                 Be the first to share your mood!
               </p>
             </div>

@@ -19,16 +19,40 @@ export function MobileDashboard({ entries, onBack, onLogMood, onViewSuggestions 
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  // Generate mood/productivity data (last 7 entries, scale 0-5)
-  const moodData = entries.slice(-7).map((entry, index) => {
-    const daysAgo = 6 - index;
-    const date = new Date();
-    date.setDate(date.getDate() - daysAgo);
-    
+  // Generate mood/productivity data (last 7 entries, include real timestamp)
+  // If multiple entries exist for a single calendar day, we take the latest for that day.
+  const latestPerDayMap = new Map<string, { mood: number; productivity: number; date: Date }>();
+  [...entries].forEach(entry => {
+    const d = new Date(entry.timestamp);
+    const dayKey = d.toISOString().split('T')[0]; // YYYY-MM-DD
+    const moodVal = entry.intensity || 3;
+    const prodVal = entry.intensity ? Math.min(5, entry.intensity + (Math.random() * 1 - 0.5)) : 3;
+    const existing = latestPerDayMap.get(dayKey);
+    if (!existing || existing.date < d) {
+      latestPerDayMap.set(dayKey, { mood: moodVal, productivity: prodVal, date: d });
+    }
+  });
+
+  const last7Days: Date[] = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setHours(12,0,0,0); // noon anchor avoids DST edge cases
+    d.setDate(d.getDate() - (6 - i));
+    return d;
+  });
+
+  const moodData = last7Days.map(d => {
+    const key = d.toISOString().split('T')[0];
+    const stored = latestPerDayMap.get(key);
+    const displayDate = stored?.date || d;
     return {
-      day: date.toLocaleDateString('en-US', { weekday: 'short' }),
-      mood: entry.intensity || 3,
-      productivity: entry.intensity ? Math.min(5, entry.intensity + (Math.random() * 1 - 0.5)) : 3,
+      day: displayDate.toLocaleDateString('en-US', { weekday: 'short' }),
+      mood: stored ? stored.mood : 0,
+      productivity: stored ? stored.productivity : 0,
+      timeLabel: stored ? displayDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : '—',
+      fullTimestamp: stored ? displayDate.toLocaleString('en-US', {
+        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+        hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true
+      }) : 'No entry',
     };
   });
 
@@ -272,12 +296,23 @@ export function MobileDashboard({ entries, onBack, onLogMood, onViewSuggestions 
                     stroke={isDark ? '#999' : '#2D7A8B'}
                   />
                   <Tooltip 
-                    contentStyle={{
-                      backgroundColor: isDark ? '#2d2d2d' : 'white',
-                      border: `1px solid ${isDark ? '#444' : '#E0E0E0'}`,
-                      borderRadius: '12px',
-                      fontSize: '12px',
-                      color: isDark ? '#fff' : '#2D7A8B'
+                    content={({ active, payload }) => {
+                      if (!active || !payload || !payload.length) return null;
+                      const p = payload[0].payload;
+                      return (
+                        <div style={{
+                          backgroundColor: isDark ? '#2d2d2d' : 'white',
+                          border: `1px solid ${isDark ? '#444' : '#E0E0E0'}`,
+                          borderRadius: '12px',
+                          padding: '10px',
+                          minWidth: '170px'
+                        }}>
+                          <p style={{ margin: 0, fontWeight: '600', color: isDark ? '#fff' : '#2D7A8B' }}>{p.day} {p.timeLabel}</p>
+                          <p style={{ margin: '4px 0 0', fontSize: '12px', color: isDark ? '#bbb' : '#555' }}>Mood: <strong style={{ color: '#9B7FD8' }}>{p.mood}/5</strong></p>
+                          <p style={{ margin: '2px 0 0', fontSize: '12px', color: isDark ? '#bbb' : '#555' }}>Productivity: <strong style={{ color: '#4FB3C5' }}>{p.productivity.toFixed(1)}/5</strong></p>
+                          <p style={{ margin: '6px 0 0', fontSize: '11px', color: isDark ? '#999' : '#777' }}>⏱ {p.fullTimestamp}</p>
+                        </div>
+                      );
                     }}
                   />
                   <Line 

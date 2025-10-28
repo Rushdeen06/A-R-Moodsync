@@ -14,25 +14,30 @@ export function MobileAnalytics({ entries }: MobileAnalyticsProps) {
   // Prepare data for chart with timestamps
   const chartData = [...entries]
     .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-    .map(e => ({
-      time: new Date(e.timestamp).toLocaleString('en-US', { 
-        month: 'short', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
-      intensity: e.intensity,
-      mood: e.mood,
-      fullTimestamp: new Date(e.timestamp).toLocaleString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      })
-    }));
+    .map(e => {
+      const date = new Date(e.timestamp);
+      return {
+        time: date.toLocaleString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        }),
+        intensity: e.intensity,
+        mood: e.mood,
+        fullTimestamp: date.toLocaleString('en-US', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        })
+      };
+    });
 
   const avgMood = entries.length > 0 ? entries.reduce((a, e) => a + e.intensity, 0) / entries.length : 0;
   const highestMood = entries.length > 0 ? Math.max(...entries.map(e => e.intensity)) : 0;
@@ -107,12 +112,43 @@ export function MobileAnalytics({ entries }: MobileAnalyticsProps) {
                     backgroundColor: isDark ? '#232946' : 'white',
                     border: `1px solid ${isDark ? '#2d7a8b' : '#4fb3c5'}`,
                     borderRadius: '12px',
-                    color: isDark ? '#fff' : '#2D7A8B'
+                    color: isDark ? '#fff' : '#2D7A8B',
+                    padding: '12px',
+                    fontSize: '13px'
                   }}
-                  formatter={(value: any, _name: string, props: any) => [
-                    `Mood: ${value}/5 (${props.payload.mood})`,
-                    `Time: ${props.payload.fullTimestamp}`
-                  ]}
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div style={{ 
+                          backgroundColor: isDark ? '#232946' : 'white',
+                          border: `2px solid ${isDark ? '#2d7a8b' : '#4fb3c5'}`,
+                          borderRadius: '12px',
+                          padding: '12px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                        }}>
+                          <p style={{ 
+                            fontWeight: 'bold', 
+                            marginBottom: '6px',
+                            color: isDark ? '#4FB3C5' : '#2D7A8B',
+                            fontSize: '14px'
+                          }}>
+                            {data.mood} - {data.intensity}/5
+                          </p>
+                          <p style={{ 
+                            fontSize: '12px',
+                            color: isDark ? '#bbb' : '#666',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}>
+                            🕒 {data.fullTimestamp}
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
                 />
                 <Line 
                   type="monotone" 

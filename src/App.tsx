@@ -1,19 +1,12 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
-// Dynamically code-split infrequently used / heavier screens
+import { useState, useEffect, Suspense, lazy } from 'react';
+// Keep only login/onboarding/profile dynamic, dashboard unified screen eagerly loaded to reduce complexity
 const MobileLoginScreen = lazy(() => import('./components/mobile/MobileLoginScreen').then(m => ({ default: m.MobileLoginScreen })));
 const MobileOnboarding = lazy(() => import('./components/mobile/MobileOnboarding').then(m => ({ default: m.MobileOnboarding })));
-const MobileHome = lazy(() => import('./components/mobile/MobileHome').then(m => ({ default: m.MobileHome })));
-const MobileMoodCheckIn = lazy(() => import('./components/mobile/MobileMoodCheckIn').then(m => ({ default: m.MobileMoodCheckIn })));
-const MobileAISuggestions = lazy(() => import('./components/mobile/MobileAISuggestions').then(m => ({ default: m.MobileAISuggestions })));
-const MobileBreakBuddy = lazy(() => import('./components/mobile/MobileBreakBuddy').then(m => ({ default: m.MobileBreakBuddy })));
-const MobileSocialBoard = lazy(() => import('./components/mobile/MobileSocialBoard').then(m => ({ default: m.MobileSocialBoard })));
-const MobileDashboard = lazy(() => import('./components/mobile/MobileDashboard').then(m => ({ default: m.MobileDashboard })));
-const MobileMoodCalendar = lazy(() => import('./components/mobile/MobileMoodCalendar').then(m => ({ default: m.MobileMoodCalendar })));
 const MobileProfile = lazy(() => import('./components/mobile/MobileProfile').then(m => ({ default: m.MobileProfile })));
-const MobileBreathing = lazy(() => import('./components/mobile/MobileBreathing').then(m => ({ default: m.MobileBreathing })));
+import { UnifiedDashboard } from './components/mobile/UnifiedDashboard';
 // Keep lightweight, frequently visible UI components eagerly loaded
+// Simplified navigation: only dashboard & profile; remove floating action
 import { MobileBottomNav } from './components/mobile/MobileBottomNav';
-import { MobileFloatingAction } from './components/mobile/MobileFloatingAction';
 import { InstallPrompt } from './components/InstallPrompt';
 import { Loader2 } from 'lucide-react';
 import { Toaster, toast } from './components/ui/sonner';
@@ -35,7 +28,7 @@ interface MoodEntry {
   category?: string;
 }
 
-type Screen = 'home' | 'calendar' | 'dashboard' | 'social' | 'profile' | 'mood-check-in' | 'ai-suggestions' | 'break-buddy' | 'breathing';
+type Screen = 'dashboard' | 'profile';
 
 export default function App() {
   // Apply theme from localStorage on mount
@@ -48,9 +41,9 @@ export default function App() {
   }, []);
   const [user, setUser] = useState(null as User | null);
   const [entries, setEntries] = useState([] as MoodEntry[]);
-  const [currentScreen, setCurrentScreen] = useState('home' as Screen);
+  const [currentScreen, setCurrentScreen] = useState('dashboard' as Screen);
   const [isLoadingData, setIsLoadingData] = useState(false);
-  const [latestMood, setLatestMood] = useState({ mood: 'okay', level: 3 } as { mood: string; level: number });
+  // Latest mood state removed in simplified version
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Calculate streak
@@ -154,7 +147,7 @@ export default function App() {
     setCurrentScreen(screen as Screen);
   };
 
-  const handleMoodSubmit = async (mood: string, note: string, activities?: string[], energyLevel?: number) => {
+  const handleMoodSubmit = async (mood: string, note: string) => {
     try {
       const intensityMap: Record<string, number> = {
         'great': 5,
@@ -165,56 +158,20 @@ export default function App() {
       };
       const intensity = intensityMap[mood] || 3;
       
-      // Enhanced note with activities and energy level
-      let enhancedNote = note;
-      if (activities && activities.length > 0) {
-        enhancedNote += (note ? '\n' : '') + `Activities: ${activities.join(', ')}`;
-      }
-      if (energyLevel) {
-        enhancedNote += `\nEnergy: ${energyLevel}/5`;
-      }
-      
-      const { entry } = await api.createMoodEntry(mood, enhancedNote, intensity);
+      const { entry } = await api.createMoodEntry(mood, note, intensity);
       const newEntry: MoodEntry = {
         ...entry,
         timestamp: new Date(entry.timestamp),
       };
       setEntries([...entries, newEntry]);
-      setLatestMood({ mood, level: intensity });
       toast.success('Mood logged! 🎉');
-      
-      // Show AI suggestions after mood check-in
-      if (intensity <= 2) {
-        setCurrentScreen('ai-suggestions');
-      } else {
-        setCurrentScreen('home');
-      }
     } catch (error) {
       console.error('Failed to create mood entry:', error);
       toast.error('Failed to save mood entry');
     }
   };
 
-  const handleAcceptSuggestion = (suggestion: string) => {
-    toast.success(`Great choice! ${suggestion} 🌟`);
-    setCurrentScreen('break-buddy');
-  };
-
-  const handleSkipSuggestion = () => {
-    toast('Maybe next time! 👍');
-    setCurrentScreen('home');
-  };
-
-  const handleBreakBuddyRequest = (coworker: string, activity: string) => {
-    toast.success(`Request sent to ${coworker} for ${activity}! 🎉`);
-  };
-
-  // Check if user logged mood today
-  const hasLoggedToday = entries.some((entry: any) => {
-    const today = new Date();
-    const entryDate = new Date(entry.timestamp);
-    return today.toDateString() === entryDate.toDateString();
-  });
+  // Removed suggestion and break-buddy related handlers in simplified app
 
   // Show onboarding for first-time users
   if (showOnboarding && user) {
@@ -251,7 +208,7 @@ export default function App() {
     );
   }
 
-  const mainScreens = ['home', 'calendar', 'dashboard', 'social', 'profile'];
+  const mainScreens = ['dashboard', 'profile'];
   const showBottomNav = mainScreens.includes(currentScreen);
 
   const LoadingFallback = () => (
@@ -264,51 +221,13 @@ export default function App() {
     <>
       <Toaster />
       
-      {currentScreen === 'home' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileHome
-            userName={user!.name.split(' ')[0]}
-            todaySuggestion={hasLoggedToday ? "Great job logging today! 🌟" : "Don't forget to check in today"}
-            onLogMood={() => setCurrentScreen('mood-check-in')}
-            onViewSocial={() => setCurrentScreen('social')}
-            onMenuClick={() => setCurrentScreen('breathing')}
-            totalEntries={entries.length}
-            currentStreak={currentStreak}
-            weekMoodAverage={entries.slice(-7).reduce((acc, e) => acc + (e.intensity || 3), 0) / Math.max(entries.slice(-7).length, 1)}
-          />
-        </Suspense>
-      )}
-
-      {currentScreen === 'calendar' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileMoodCalendar
-            entries={entries}
-          />
-        </Suspense>
-      )}
-
       {currentScreen === 'dashboard' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileDashboard
-            entries={entries}
-            onBack={() => setCurrentScreen('home')}
-            onLogMood={() => setCurrentScreen('mood-check-in')}
-            onViewSuggestions={entries.length > 0 ? () => setCurrentScreen('ai-suggestions') : undefined}
-          />
-        </Suspense>
-      )}
-
-      {currentScreen === 'social' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileSocialBoard
-            entries={entries.map((e: any) => ({ 
-              ...e, 
-              userName: e.userId === user!.email ? user!.name : 'Anonymous User',
-              category: Math.random() > 0.5 ? 'Editing' : 'Leading'
-            }))}
-            onBack={() => setCurrentScreen('home')}
-          />
-        </Suspense>
+        <UnifiedDashboard
+          entries={entries}
+          onSubmitMood={handleMoodSubmit}
+          currentStreak={currentStreak}
+          userName={user!.name}
+        />
       )}
 
       {currentScreen === 'profile' && (
@@ -321,54 +240,6 @@ export default function App() {
             onLogout={handleLogout}
           />
         </Suspense>
-      )}
-
-      {currentScreen === 'mood-check-in' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileMoodCheckIn
-            onSubmit={handleMoodSubmit}
-            onBack={() => setCurrentScreen('home')}
-          />
-        </Suspense>
-      )}
-
-      {currentScreen === 'ai-suggestions' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileAISuggestions
-            latestMood={latestMood.mood}
-            moodLevel={latestMood.level}
-            onAccept={handleAcceptSuggestion}
-            onSkip={handleSkipSuggestion}
-            onFindBuddy={() => setCurrentScreen('break-buddy')}
-            onBack={() => setCurrentScreen('home')}
-          />
-        </Suspense>
-      )}
-
-      {currentScreen === 'break-buddy' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileBreakBuddy
-            userName={user!.name}
-            onBack={() => setCurrentScreen('ai-suggestions')}
-            onRequestSent={handleBreakBuddyRequest}
-          />
-        </Suspense>
-      )}
-
-      {currentScreen === 'breathing' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileBreathing
-            onComplete={() => {
-              toast.success('Great session! You completed breathing exercises 🌬️');
-              setCurrentScreen('home');
-            }}
-          />
-        </Suspense>
-      )}
-
-      {/* Floating Action Button */}
-      {showBottomNav && (
-        <MobileFloatingAction onClick={() => setCurrentScreen('mood-check-in')} />
       )}
 
       {/* Bottom Navigation */}

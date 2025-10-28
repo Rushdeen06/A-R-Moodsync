@@ -4,8 +4,8 @@
       "private": true,
       "homepage": "https://Rushdeen06.github.io/A-R-Moodsync",
       "scripts": {
-            "dev": "vite",
-            "build": "vite build",
+            "dev": "node ./node_modules/vite/bin/vite.js",
+            "build": "node ./node_modules/vite/bin/vite.js build",
             "test:e2e": "playwright test",
             "predeploy": "npm run build",
             "deploy": "gh-pages -d build"

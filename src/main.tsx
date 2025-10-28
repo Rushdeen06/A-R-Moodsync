@@ -1,6 +1,7 @@
 
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
+import { ErrorBoundary } from './components/ErrorBoundary';
 import "./index.css";
 import "./theme.css";
 import { ThemeProvider } from './utils/ThemeProvider';
@@ -25,7 +26,7 @@ if ('serviceWorker' in navigator) {
     (async () => {
       for (const url of candidates) {
         try {
-          const reg = await navigator.serviceWorker.register(url);
+          await navigator.serviceWorker.register(url);
           console.log('[PWA] Service worker registered via', url);
           return;
         } catch (err) {
@@ -39,6 +40,8 @@ if ('serviceWorker' in navigator) {
 
 createRoot(document.getElementById("root")!).render(
   <ThemeProvider>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </ThemeProvider>
 );  

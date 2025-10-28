@@ -1,11 +1,9 @@
 import { motion } from 'motion/react';
 import { Button } from '../ui/button';
-import { Settings, LogOut, Award, Bell, Moon, Sun, Download, Heart, Trophy, Target } from 'lucide-react';
+import { Settings, LogOut, Award, Moon, Sun, Download, Heart, Trophy, Target } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
 import { useTheme } from '../../utils/ThemeProvider';
-import { Switch } from '../ui/switch';
 import { UserPrivacyPanel } from '../UserPrivacyPanel';
-import { useState } from 'react';
 
 interface MobileProfileProps {
   userName: string;
@@ -16,27 +14,9 @@ interface MobileProfileProps {
 }
 
 export function MobileProfile({ userName, userEmail, totalEntries, currentStreak, onLogout }: MobileProfileProps) {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
-    return Notification.permission === 'granted';
-  });
+  // Simplified profile: remove notifications & app settings modal
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-
-  // Handle notification permission
-  const handleNotificationChange = async (enabled: boolean) => {
-    if (enabled) {
-      const permission = await Notification.requestPermission();
-      if (permission === 'granted') {
-        setNotificationsEnabled(true);
-        localStorage.setItem('notifications', 'enabled');
-      } else {
-        setNotificationsEnabled(false);
-      }
-    } else {
-      setNotificationsEnabled(false);
-      localStorage.setItem('notifications', 'disabled');
-    }
-  };
 
   // Handle data export
   const handleExportData = async () => {
@@ -44,7 +24,7 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
       const data = {
         userInfo: { name: userName, email: userEmail },
         stats: { totalEntries, currentStreak },
-        settings: { notificationsEnabled, darkMode: theme === 'dark' },
+        entries: JSON.parse(localStorage.getItem('moodsync_entries') || '[]'),
         exportDate: new Date().toISOString()
       };
       
@@ -65,6 +45,8 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
   // Calculate achievement level
   const achievementLevel = totalEntries < 10 ? 'Beginner' : totalEntries < 50 ? 'Explorer' : totalEntries < 100 ? 'Dedicated' : 'Master';
   const achievementColor = totalEntries < 10 ? '#A8C9C7' : totalEntries < 50 ? '#4FB3C5' : totalEntries < 100 ? '#FFB84D' : '#7DD4A8';
+
+  // Removed settings manipulation functions in simplified profile
 
   return (
     <motion.div
@@ -205,34 +187,6 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
           </div>
 
           <div className="space-y-3">
-            {/* Notifications */}
-            <motion.div 
-              className="flex items-center justify-between p-3 rounded-xl"
-              style={{ backgroundColor: isDark ? '#3d3d3d' : '#F5F8FA' }}
-              whileHover={{ scale: 1.01 }}
-            >
-              <div className="flex items-center gap-3">
-                <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: isDark ? '#4d3d5d' : '#E8DFF5' }}
-                >
-                  <Bell className="w-5 h-5" style={{ color: '#9B7FD8' }} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
-                    Notifications
-                  </p>
-                  <p className="text-xs" style={{ color: isDark ? '#999' : '#A8C9C7' }}>
-                    Daily mood reminders
-                  </p>
-                </div>
-              </div>
-              <Switch
-                checked={notificationsEnabled}
-                onCheckedChange={handleNotificationChange}
-              />
-            </motion.div>
-
             {/* Dark Mode */}
             <motion.div 
               className="flex items-center justify-between p-3 rounded-xl"
@@ -288,44 +242,16 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
               </div>
             </motion.div>
 
-            {/* App Settings */}
-            <motion.div 
-              className="flex items-center justify-between p-3 rounded-xl"
-              style={{ backgroundColor: isDark ? '#3d3d3d' : '#F5F8FA' }}
-              whileHover={{ scale: 1.01 }}
-            >
-              <div className="flex items-center gap-3">
-                <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: isDark ? '#3d4d5d' : '#E8F6F8' }}
-                >
-                  <Settings className="w-5 h-5" style={{ color: '#4FB3C5' }} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
-                    App Settings
-                  </p>
-                  <p className="text-xs" style={{ color: isDark ? '#999' : '#A8C9C7' }}>
-                    Preferences & options
-                  </p>
-                </div>
-              </div>
-            </motion.div>
+            {/* Removed App Settings row in simplified version */}
           </div>
         </div>
 
         {/* Logout Button */}
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button
             onClick={onLogout}
             className="w-full py-6 rounded-2xl text-base font-semibold shadow-lg"
-            style={{ 
-              backgroundColor: '#FF6B6B',
-              color: 'white'
-            }}
+            style={{ backgroundColor: '#FF6B6B', color: 'white' }}
           >
             <LogOut className="w-5 h-5 mr-2" />
             Log Out

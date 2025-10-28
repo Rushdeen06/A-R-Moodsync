@@ -1,21 +1,17 @@
 import { motion } from 'motion/react';
-import { Home, Calendar, TrendingUp, User, MessageSquare } from 'lucide-react';
+import { TrendingUp, User } from 'lucide-react';
 
 interface MobileBottomNavProps {
   currentScreen: string;
   onNavigate: (screen: string) => void;
-  hasUnread?: boolean;
 }
 
 const NAV_ITEMS = [
-  { id: 'home', icon: Home, label: 'Home' },
-  { id: 'calendar', icon: Calendar, label: 'History' },
-  { id: 'dashboard', icon: TrendingUp, label: 'Analytics' },
-  { id: 'social', icon: MessageSquare, label: 'Social' },
+  { id: 'dashboard', icon: TrendingUp, label: 'Dashboard' },
   { id: 'profile', icon: User, label: 'Profile' },
 ];
 
-export function MobileBottomNav({ currentScreen, onNavigate, hasUnread }: MobileBottomNavProps) {
+export function MobileBottomNav({ currentScreen, onNavigate }: MobileBottomNavProps) {
   return (
     <motion.div 
       initial={{ y: 100 }}
@@ -27,7 +23,7 @@ export function MobileBottomNav({ currentScreen, onNavigate, hasUnread }: Mobile
         boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.05)' 
       }}
     >
-      <div className="grid grid-cols-5 h-16">
+  <div className="grid grid-cols-2 h-16">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = currentScreen === item.id;
@@ -76,13 +72,7 @@ export function MobileBottomNav({ currentScreen, onNavigate, hasUnread }: Mobile
                 {item.label}
               </span>
               
-              {/* Unread badge for social */}
-              {item.id === 'social' && hasUnread && (
-                <div 
-                  className="absolute top-2 right-1/4 w-2 h-2 rounded-full"
-                  style={{ backgroundColor: '#FF6B6B' }}
-                />
-              )}
+              {/* Removed social unread badge in simplified app */}
             </button>
           );
           })}

@@ -19,53 +19,41 @@ export function MobileDashboard({ entries, onBack, onLogMood, onViewSuggestions 
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  // Generate mood/productivity data (last 7 entries, include real timestamp)
-  // If multiple entries exist for a single calendar day, we take the latest for that day.
-  const latestPerDayMap = new Map<string, { mood: number; productivity: number; date: Date }>();
-  [...entries].forEach(entry => {
-    const d = new Date(entry.timestamp);
-    const dayKey = d.toISOString().split('T')[0]; // YYYY-MM-DD
-    const moodVal = entry.intensity || 3;
-    const prodVal = entry.intensity ? Math.min(5, entry.intensity + (Math.random() * 1 - 0.5)) : 3;
-    const existing = latestPerDayMap.get(dayKey);
-    if (!existing || existing.date < d) {
-      latestPerDayMap.set(dayKey, { mood: moodVal, productivity: prodVal, date: d });
-    }
-  });
+  // Build per-entry graph data for the last 7 calendar days.
+  const sevenDaysAgo = (() => { const d = new Date(); d.setDate(d.getDate() - 6); d.setHours(0,0,0,0); return d; })();
+  const graphData = entries
+    .filter(e => e.timestamp >= sevenDaysAgo)
+    .map(e => {
+      const d = new Date(e.timestamp);
+      return {
+        ts: d.getTime(),
+        day: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        mood: e.intensity || 3,
+        productivity: e.intensity ? Math.min(5, (e.intensity + (Math.random()*1 - 0.4))) : 3,
+        timeLabel: d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+        fullTimestamp: d.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })
+      };
+    })
+    .sort((a,b) => a.ts - b.ts);
 
-  const last7Days: Date[] = Array.from({ length: 7 }, (_, i) => {
+  // Fallback placeholder points (one per day) if no entries yet
+  const placeholderData = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
-    d.setHours(12,0,0,0); // noon anchor avoids DST edge cases
     d.setDate(d.getDate() - (6 - i));
-    return d;
-  });
-
-  const moodData = last7Days.map(d => {
-    const key = d.toISOString().split('T')[0];
-    const stored = latestPerDayMap.get(key);
-    const displayDate = stored?.date || d;
+    d.setHours(12,0,0,0);
     return {
-      day: displayDate.toLocaleDateString('en-US', { weekday: 'short' }),
-      mood: stored ? stored.mood : 0,
-      productivity: stored ? stored.productivity : 0,
-      timeLabel: stored ? displayDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : '—',
-      fullTimestamp: stored ? displayDate.toLocaleString('en-US', {
-        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
-        hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true
-      }) : 'No entry',
+      ts: d.getTime(),
+      day: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      mood: 0,
+      productivity: 0,
+      timeLabel: '—',
+      fullTimestamp: 'No entry'
     };
   });
 
-  // If no data, show sample data
-  const displayData = moodData.length > 0 ? moodData : [
-    { day: 'Mon', mood: 0, productivity: 0 },
-    { day: 'Tue', mood: 0, productivity: 0 },
-    { day: 'Wed', mood: 0, productivity: 0 },
-    { day: 'Thu', mood: 0, productivity: 0 },
-    { day: 'Fri', mood: 0, productivity: 0 },
-    { day: 'Sat', mood: 0, productivity: 0 },
-    { day: 'Sun', mood: 0, productivity: 0 },
-  ];
+  const moodData = graphData.length > 0 ? graphData : placeholderData;
+
+  // (Removed old displayData fallback; moodData already handles placeholders.)
 
   // Calculate statistics
   const avgMood = moodData.length > 0 ? (moodData.reduce((sum, d) => sum + d.mood, 0) / moodData.length) : 0;
@@ -279,15 +267,22 @@ export function MobileDashboard({ entries, onBack, onLogMood, onViewSuggestions 
           >
             {moodData.length > 0 ? (
               <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={displayData}>
+                <LineChart data={moodData}>
                   <CartesianGrid 
                     strokeDasharray="3 3" 
                     stroke={isDark ? '#333' : '#E0E0E0'} 
                   />
                   <XAxis 
-                    dataKey="day" 
+                    dataKey="ts"
+                    type="number"
+                    domain={[moodData[0].ts, moodData[moodData.length-1].ts]}
+                    tickFormatter={(value: number) => {
+                      const d = new Date(value);
+                      return d.toLocaleDateString('en-US', { weekday: 'short' }) + '\n' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                    }}
                     fontSize={11}
                     stroke={isDark ? '#999' : '#2D7A8B'}
+                    interval={0}
                   />
                   <YAxis 
                     domain={[0, 5]}
@@ -304,13 +299,12 @@ export function MobileDashboard({ entries, onBack, onLogMood, onViewSuggestions 
                           backgroundColor: isDark ? '#2d2d2d' : 'white',
                           border: `1px solid ${isDark ? '#444' : '#E0E0E0'}`,
                           borderRadius: '12px',
-                          padding: '10px',
-                          minWidth: '170px'
+                          padding: '12px',
+                          minWidth: '190px'
                         }}>
-                          <p style={{ margin: 0, fontWeight: '600', color: isDark ? '#fff' : '#2D7A8B' }}>{p.day} {p.timeLabel}</p>
-                          <p style={{ margin: '4px 0 0', fontSize: '12px', color: isDark ? '#bbb' : '#555' }}>Mood: <strong style={{ color: '#9B7FD8' }}>{p.mood}/5</strong></p>
+                          <p style={{ margin: 0, fontWeight: '600', color: isDark ? '#fff' : '#2D7A8B' }}>{p.fullTimestamp}</p>
+                          <p style={{ margin: '6px 0 0', fontSize: '12px', color: isDark ? '#bbb' : '#555' }}>Mood: <strong style={{ color: '#9B7FD8' }}>{p.mood}/5</strong></p>
                           <p style={{ margin: '2px 0 0', fontSize: '12px', color: isDark ? '#bbb' : '#555' }}>Productivity: <strong style={{ color: '#4FB3C5' }}>{p.productivity.toFixed(1)}/5</strong></p>
-                          <p style={{ margin: '6px 0 0', fontSize: '11px', color: isDark ? '#999' : '#777' }}>⏱ {p.fullTimestamp}</p>
                         </div>
                       );
                     }}

@@ -3,6 +3,8 @@ import { useState, useEffect, Suspense, lazy } from 'react';
 const MobileLoginScreen = lazy(() => import('./components/mobile/MobileLoginScreen').then(m => ({ default: m.MobileLoginScreen })));
 const MobileOnboarding = lazy(() => import('./components/mobile/MobileOnboarding').then(m => ({ default: m.MobileOnboarding })));
 const MobileProfile = lazy(() => import('./components/mobile/MobileProfile').then(m => ({ default: m.MobileProfile })));
+const MobileAnalytics = lazy(() => import('./components/mobile/MobileAnalytics').then(m => ({ default: m.MobileAnalytics })));
+const MobileHistory = lazy(() => import('./components/mobile/MobileHistory').then(m => ({ default: m.MobileHistory })));
 import { UnifiedDashboard } from './components/mobile/UnifiedDashboard';
 // Keep lightweight, frequently visible UI components eagerly loaded
 // Simplified navigation: only dashboard & profile; remove floating action
@@ -28,7 +30,7 @@ interface MoodEntry {
   category?: string;
 }
 
-type Screen = 'dashboard' | 'profile';
+type Screen = 'dashboard' | 'analytics' | 'history' | 'profile';
 
 export default function App() {
   // Apply theme from localStorage on mount
@@ -208,7 +210,7 @@ export default function App() {
     );
   }
 
-  const mainScreens = ['dashboard', 'profile'];
+  const mainScreens = ['dashboard', 'analytics', 'history', 'profile'];
   const showBottomNav = mainScreens.includes(currentScreen);
 
   const LoadingFallback = () => (
@@ -228,6 +230,18 @@ export default function App() {
           currentStreak={currentStreak}
           userName={user!.name}
         />
+      )}
+
+      {currentScreen === 'analytics' && (
+        <Suspense fallback={<LoadingFallback />}>
+          <MobileAnalytics entries={entries} />
+        </Suspense>
+      )}
+
+      {currentScreen === 'history' && (
+        <Suspense fallback={<LoadingFallback />}>
+          <MobileHistory entries={entries} />
+        </Suspense>
       )}
 
       {currentScreen === 'profile' && (

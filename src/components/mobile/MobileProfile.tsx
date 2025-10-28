@@ -56,14 +56,19 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
       className="min-h-screen pb-24"
       style={{ backgroundColor: isDark ? '#1a1a1a' : '#E8F6F8' }}
     >
-      <div className="max-w-md mx-auto p-4">
+  <div className="max-w-md mx-auto p-4 relative z-10">
         {/* Header with gradient */}
         <div 
-          className="rounded-3xl p-6 mb-4 shadow-lg relative overflow-hidden"
+          className="rounded-3xl p-6 mb-5 shadow-lg relative overflow-hidden"
           style={{ 
             background: isDark 
               ? 'linear-gradient(135deg, #2D7A8B 0%, #1a5f6f 100%)' 
-              : 'linear-gradient(135deg, #4FB3C5 0%, #2D7A8B 100%)'
+              : 'linear-gradient(135deg, #4FB3C5 0%, #2D7A8B 100%)',
+            boxShadow: isDark
+              ? '0 8px 32px 0 rgba(31, 38, 135, 0.37)'
+              : '0 8px 32px 0 rgba(80, 180, 197, 0.15)',
+            backdropFilter: 'blur(8px)',
+            border: isDark ? '1.5px solid #2d7a8b44' : '1.5px solid #4fb3c544',
           }}
         >
           {/* Decorative circles */}
@@ -113,7 +118,7 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
         </div>
 
         {/* Stats Cards Grid */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
+  <div className="grid grid-cols-3 gap-4 mb-7">
           <motion.div 
             className="rounded-2xl p-4 shadow-sm"
             style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
@@ -173,12 +178,17 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
         </div>
 
         {/* Privacy panel */}
-        <div className="mb-4">
+  <div className="mb-6">
           <UserPrivacyPanel />
         </div>
 
         {/* Settings Section */}
-        <div className="rounded-3xl p-5 mb-4 shadow-sm" style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}>
+        <div className="rounded-3xl p-6 mb-6 shadow-xl" style={{
+          background: isDark ? 'rgba(45, 55, 72, 0.85)' : 'rgba(255,255,255,0.85)',
+          boxShadow: isDark ? '0 4px 24px 0 #2d7a8b22' : '0 4px 24px 0 #4fb3c522',
+          backdropFilter: 'blur(10px)',
+          border: isDark ? '1.5px solid #2d7a8b33' : '1.5px solid #4fb3c533',
+        }}>
           <div className="flex items-center gap-2 mb-4">
             <Settings className="w-5 h-5" style={{ color: '#4FB3C5' }} />
             <h3 className="text-lg font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
@@ -251,7 +261,7 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
           <Button
             onClick={onLogout}
             className="w-full py-6 rounded-2xl text-base font-semibold shadow-lg"
-            style={{ backgroundColor: '#FF6B6B', color: 'white' }}
+            style={{ background: 'linear-gradient(90deg,#FF6B6B,#FFB84D)', color: 'white', border: 'none' }}
           >
             <LogOut className="w-5 h-5 mr-2" />
             Log Out
@@ -259,7 +269,7 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
         </motion.div>
 
         {/* App Version */}
-        <p className="text-center text-xs mt-6" style={{ color: isDark ? '#666' : '#A8C9C7' }}>
+        <p className="text-center text-xs mt-6" style={{ color: isDark ? '#666' : '#A8C9C7', letterSpacing: 1 }}>
           A&R Mood Sync v1.0.0
         </p>
       </div>

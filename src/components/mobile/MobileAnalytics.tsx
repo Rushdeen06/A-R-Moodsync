@@ -1,18 +1,57 @@
+import { useState } from 'react';
 import { useTheme } from '../../utils/ThemeProvider';
 import { motion } from 'motion/react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Calendar, Clock } from 'lucide-react';
+import { TrendingUp, Calendar, Clock, Sun, Moon, Coffee } from 'lucide-react';
 
 interface MobileAnalyticsProps {
   entries: { mood: string; note: string; intensity: number; timestamp: Date }[];
 }
 
+type TimeRange = '7d' | '30d' | 'all';
+
 export function MobileAnalytics({ entries }: MobileAnalyticsProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const [timeRange, setTimeRange] = useState<TimeRange>('7d');
+
+  // Filter entries based on selected time range
+  const filteredEntries = entries.filter(e => {
+    const now = new Date();
+    const entryDate = new Date(e.timestamp);
+    if (timeRange === '7d') {
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      return entryDate >= weekAgo;
+    } else if (timeRange === '30d') {
+      const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      return entryDate >= monthAgo;
+    }
+    return true; // 'all'
+  });
+
+  // Calculate time-of-day patterns
+  const morningEntries = filteredEntries.filter(e => {
+    const hour = new Date(e.timestamp).getHours();
+    return hour >= 6 && hour < 12;
+  });
+  const afternoonEntries = filteredEntries.filter(e => {
+    const hour = new Date(e.timestamp).getHours();
+    return hour >= 12 && hour < 18;
+  });
+  const eveningEntries = filteredEntries.filter(e => {
+    const hour = new Date(e.timestamp).getHours();
+    return hour >= 18 || hour < 6;
+  });
+
+  const morningAvg = morningEntries.length > 0 ? morningEntries.reduce((a, e) => a + e.intensity, 0) / morningEntries.length : 0;
+  const afternoonAvg = afternoonEntries.length > 0 ? afternoonEntries.reduce((a, e) => a + e.intensity, 0) / afternoonEntries.length : 0;
+  const eveningAvg = eveningEntries.length > 0 ? eveningEntries.reduce((a, e) => a + e.intensity, 0) / eveningEntries.length : 0;
+
+  const bestTimeOfDay = morningAvg > afternoonAvg && morningAvg > eveningAvg ? 'morning' 
+    : afternoonAvg > eveningAvg ? 'afternoon' : 'evening';
 
   // Prepare data for chart with timestamps
-  const chartData = [...entries]
+  const chartData = [...filteredEntries]
     .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
     .map(e => {
       const date = new Date(e.timestamp);
@@ -39,9 +78,9 @@ export function MobileAnalytics({ entries }: MobileAnalyticsProps) {
       };
     });
 
-  const avgMood = entries.length > 0 ? entries.reduce((a, e) => a + e.intensity, 0) / entries.length : 0;
-  const highestMood = entries.length > 0 ? Math.max(...entries.map(e => e.intensity)) : 0;
-  const lowestMood = entries.length > 0 ? Math.min(...entries.map(e => e.intensity)) : 0;
+  const avgMood = filteredEntries.length > 0 ? filteredEntries.reduce((a, e) => a + e.intensity, 0) / filteredEntries.length : 0;
+  const highestMood = filteredEntries.length > 0 ? Math.max(...filteredEntries.map(e => e.intensity)) : 0;
+  const lowestMood = filteredEntries.length > 0 ? Math.min(...filteredEntries.map(e => e.intensity)) : 0;
 
   return (
     <div className="min-h-screen pb-24 relative" style={{
@@ -50,7 +89,7 @@ export function MobileAnalytics({ entries }: MobileAnalyticsProps) {
         : 'linear-gradient(135deg, #E8F6F8 0%, #C9E7F2 100%)',
     }}>
       <div className="max-w-md mx-auto p-4 relative z-10">
-        {/* Header */}
+        {/* Header with time range selector */}
         <div className="rounded-3xl p-6 mb-5 shadow-lg" style={{
           background: isDark
             ? 'linear-gradient(135deg,#2D7A8B,#1a5f6f)'
@@ -61,13 +100,36 @@ export function MobileAnalytics({ entries }: MobileAnalyticsProps) {
           backdropFilter: 'blur(8px)',
           border: isDark ? '1.5px solid #2d7a8b44' : '1.5px solid #4fb3c544',
         }}>
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-3">
             <TrendingUp className="w-6 h-6 text-white" />
             <h2 className="text-2xl font-bold text-white drop-shadow-lg">Analytics</h2>
           </div>
-          <p className="text-base font-medium" style={{ color: 'rgba(255,255,255,0.85)' }}>
+          <p className="text-base font-medium mb-4" style={{ color: 'rgba(255,255,255,0.85)' }}>
             Detailed mood trends over time
           </p>
+
+          {/* Time Range Toggle */}
+          <div className="flex gap-2">
+            {[
+              { value: '7d' as TimeRange, label: 'Week' },
+              { value: '30d' as TimeRange, label: 'Month' },
+              { value: 'all' as TimeRange, label: 'All Time' }
+            ].map(range => (
+              <motion.button
+                key={range.value}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setTimeRange(range.value)}
+                className="flex-1 py-2 rounded-xl font-semibold text-sm transition-all"
+                style={{
+                  backgroundColor: timeRange === range.value ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.2)',
+                  color: timeRange === range.value ? '#2D7A8B' : 'rgba(255,255,255,0.85)',
+                  border: timeRange === range.value ? 'none' : '1px solid rgba(255,255,255,0.3)'
+                }}
+              >
+                {range.label}
+              </motion.button>
+            ))}
+          </div>
         </div>
 
         {/* Quick Stats */}
@@ -76,6 +138,88 @@ export function MobileAnalytics({ entries }: MobileAnalyticsProps) {
           <StatCard label="Highest" value={highestMood.toString()} isDark={isDark} color="#7DD4A8" />
           <StatCard label="Lowest" value={lowestMood.toString()} isDark={isDark} color="#FF6B6B" />
         </div>
+
+        {/* Smart Insights Panel */}
+        {filteredEntries.length >= 3 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-3xl p-5 mb-6 shadow-xl"
+            style={{
+              background: isDark ? 'rgba(45, 55, 72, 0.85)' : 'rgba(255,255,255,0.85)',
+              boxShadow: isDark ? '0 4px 24px 0 #2d7a8b22' : '0 4px 24px 0 #4fb3c522',
+              backdropFilter: 'blur(10px)',
+              border: isDark ? '1.5px solid #2d7a8b33' : '1.5px solid #4fb3c533',
+            }}
+          >
+            <h3 className="text-lg font-bold mb-4" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+              💡 Insights
+            </h3>
+            <div className="space-y-3">
+              {/* Best time of day */}
+              {(morningEntries.length > 0 || afternoonEntries.length > 0 || eveningEntries.length > 0) && (
+                <div className="flex items-start gap-3 p-3 rounded-xl" style={{
+                  backgroundColor: isDark ? '#232946' : '#F5F8FA'
+                }}>
+                  {bestTimeOfDay === 'morning' && <Sun className="w-5 h-5 mt-0.5" style={{ color: '#FFB84D' }} />}
+                  {bestTimeOfDay === 'afternoon' && <Coffee className="w-5 h-5 mt-0.5" style={{ color: '#4FB3C5' }} />}
+                  {bestTimeOfDay === 'evening' && <Moon className="w-5 h-5 mt-0.5" style={{ color: '#9B7FD8' }} />}
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold mb-1" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+                      Best Time of Day
+                    </p>
+                    <p className="text-xs" style={{ color: isDark ? '#bbb' : '#666' }}>
+                      You feel best in the <strong>{bestTimeOfDay}</strong> with an average of{' '}
+                      <strong>{(bestTimeOfDay === 'morning' ? morningAvg : bestTimeOfDay === 'afternoon' ? afternoonAvg : eveningAvg).toFixed(1)}/5</strong>
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Logging frequency */}
+              <div className="flex items-start gap-3 p-3 rounded-xl" style={{
+                backgroundColor: isDark ? '#232946' : '#F5F8FA'
+              }}>
+                <Calendar className="w-5 h-5 mt-0.5" style={{ color: '#4FB3C5' }} />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold mb-1" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+                    Logging Frequency
+                  </p>
+                  <p className="text-xs" style={{ color: isDark ? '#bbb' : '#666' }}>
+                    {filteredEntries.length} {filteredEntries.length === 1 ? 'entry' : 'entries'} in the last{' '}
+                    {timeRange === '7d' ? '7 days' : timeRange === '30d' ? '30 days' : 'recorded period'}
+                    {timeRange !== 'all' && ` (avg ${(filteredEntries.length / (timeRange === '7d' ? 7 : 30)).toFixed(1)} per day)`}
+                  </p>
+                </div>
+              </div>
+
+              {/* Trend direction */}
+              {filteredEntries.length >= 4 && (
+                <div className="flex items-start gap-3 p-3 rounded-xl" style={{
+                  backgroundColor: isDark ? '#232946' : '#F5F8FA'
+                }}>
+                  <TrendingUp className="w-5 h-5 mt-0.5" style={{ 
+                    color: filteredEntries[filteredEntries.length - 1].intensity > filteredEntries[0].intensity ? '#7DD4A8' : '#FF6B6B'
+                  }} />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold mb-1" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+                      Overall Trend
+                    </p>
+                    <p className="text-xs" style={{ color: isDark ? '#bbb' : '#666' }}>
+                      {filteredEntries[filteredEntries.length - 1].intensity > filteredEntries[0].intensity ? (
+                        <>Your mood has been <strong style={{ color: '#7DD4A8' }}>improving</strong> recently! Keep it up! 🎉</>
+                      ) : filteredEntries[filteredEntries.length - 1].intensity < filteredEntries[0].intensity ? (
+                        <>Your mood has been <strong style={{ color: '#FF6B6B' }}>declining</strong>. Consider reaching out for support. 💙</>
+                      ) : (
+                        <>Your mood has been <strong style={{ color: '#4FB3C5' }}>stable</strong>. Consistency is great! 🎯</>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
 
         {/* Mood Trend Chart */}
         <div className="rounded-3xl p-6 mb-6 shadow-xl" style={{

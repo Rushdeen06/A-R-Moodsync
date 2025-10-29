@@ -16,12 +16,12 @@ The app now uses a cohesive sage green color palette throughout:
 ## 📱 New Navigation System
 
 ### Bottom Navigation Bar
-- **5 main screens** accessible via bottom tabs:
-  1. 🏠 Home - Dashboard & quick actions
-  2. 📅 History - Calendar view of mood entries
-  3. 📊 Analytics - Mood & productivity trends
-  4. 💬 Social - Community board
-  5. 👤 Profile - User settings & stats
+- **5 core tabs** accessible via bottom navigation:
+  1. 🏠 Dashboard - Unified mood logging & daily highlights
+  2. 📊 Analytics - Detailed mood/time-of-day trends
+  3. 📅 History - Calendar view of mood entries
+  4. 🧠 Insights - Viva Insights inspired wellbeing & focus guidance (NEW)
+  5. 👤 Profile - User settings & export
 
 ### Floating Action Button
 - Quick access to mood check-in from any main screen
@@ -29,6 +29,17 @@ The app now uses a cohesive sage green color palette throughout:
 - Fixed position above bottom nav
 
 ## 🆕 New Features
+
+### Viva Insights Style Intelligence (`InsightsHub.tsx`) ✅ NEW
+Brings a wellness & productivity intelligence layer similar to Microsoft Viva Insights.
+- **Daily Briefing**: Snapshot of wellbeing score, consistency, average mood, focus window.
+- **Wellbeing Score**: Composite (mood quality + stability + logging consistency) shown as a progress bar.
+- **Focus Time Recommendation**: Calculates best 2-hour deep work block from historical high-intensity mood periods.
+- **Break Reminders**: Configurable interval (30–120 min) with auto toast prompts and manual "Log Break" action.
+- **Quiet Hours**: Set start/end (e.g. 22 → 7). Tracks how many entries occur during restorative time.
+- **Weekly Digest**: Summarizes entries, average mood, most frequent mood, and top note themes extracted from recent logs.
+- **Burnout Risk Heuristic**: Simple triage (low/medium/high) based on low mood ratio, variance, and consistency.
+- **Accessibility & Performance**: All metrics memoized; ARIA attributes on inputs.
 
 ### 1. **Mood Calendar** (`MobileMoodCalendar.tsx`)
 - Monthly calendar view with color-coded days
@@ -121,11 +132,34 @@ Login → Home → [Quick Actions]
 - Empty state
 
 ### Dashboard
-- Dual-line mood/productivity graph
-- 7-day trend view
-- Stats cards (total logs, latest mood, average)
-- AI suggestions CTA
-- Quick mood check-in
+- Enhanced mood logger with quick notes
+- Recent entry list with time-ago formatting
+- Weekly trend indicator & streak counter
+- Success animations on log
+
+### Analytics
+- Time-range filtering (7d / 30d / all time)
+- Time-of-day pattern averages (morning/afternoon/evening)
+- Smart insights cards
+- Per-entry timestamp plotting
+
+### History
+- Monthly calendar with multi-entry count badges
+- Day detail panel supports multiple entries
+- Color-coded intensity averages
+
+### Insights (NEW)
+- Daily briefing snapshot
+- Wellbeing score bar & variance stats
+- Focus time recommendation
+- Break reminder engine with countdown
+- Quiet hours configuration
+- Weekly digest + note theme extraction
+
+### Profile
+- Stats & streak display
+- Export data (existing)
+- Logout & session management
 
 ### Social
 - Community mood board
@@ -183,11 +217,11 @@ Login → Home → [Quick Actions]
 - Card: 0 2px 8px rgba(0,0,0,0.08)
 
 ## 🚀 Future Enhancements
-- Dark mode implementation
-- Push notifications
-- Data export (CSV/PDF)
-- Social sharing
-- Mood insights & patterns
-- Custom reminders
-- Wellness challenges
-- Team mood tracking
+- Advanced predictive focus windows (machine learning)
+- Mood → task correlation insights
+- Cross-day energy recovery charts
+- CSV/PDF export of insights & trends
+- Push notifications for quiet hours + breaks
+- Team / group wellbeing aggregation
+- Challenges & goal tracking per week
+- Sentiment analysis of notes (NLP)

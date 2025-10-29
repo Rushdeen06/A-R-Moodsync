@@ -5,6 +5,7 @@ const MobileOnboarding = lazy(() => import('./components/mobile/MobileOnboarding
 const MobileProfile = lazy(() => import('./components/mobile/MobileProfile').then(m => ({ default: m.MobileProfile })));
 const MobileAnalytics = lazy(() => import('./components/mobile/MobileAnalytics').then(m => ({ default: m.MobileAnalytics })));
 const MobileHistory = lazy(() => import('./components/mobile/MobileHistory').then(m => ({ default: m.MobileHistory })));
+const InsightsHub = lazy(() => import('./components/mobile/InsightsHub').then(m => ({ default: m.InsightsHub })));
 import { UnifiedDashboard } from './components/mobile/UnifiedDashboard';
 // Keep lightweight, frequently visible UI components eagerly loaded
 // Simplified navigation: only dashboard & profile; remove floating action
@@ -30,7 +31,7 @@ interface MoodEntry {
   category?: string;
 }
 
-type Screen = 'dashboard' | 'analytics' | 'history' | 'profile';
+type Screen = 'dashboard' | 'analytics' | 'history' | 'insights' | 'profile';
 
 export default function App() {
   // Apply theme from localStorage on mount
@@ -258,7 +259,7 @@ export default function App() {
     );
   }
 
-  const mainScreens = ['dashboard', 'analytics', 'history', 'profile'];
+  const mainScreens = ['dashboard', 'analytics', 'history', 'insights', 'profile'];
   const showBottomNav = mainScreens.includes(currentScreen);
 
   const LoadingFallback = () => (
@@ -289,6 +290,12 @@ export default function App() {
       {currentScreen === 'history' && (
         <Suspense fallback={<LoadingFallback />}>
           <MobileHistory entries={entries} />
+        </Suspense>
+      )}
+
+      {currentScreen === 'insights' && (
+        <Suspense fallback={<LoadingFallback />}>
+          <InsightsHub entries={entries} />
         </Suspense>
       )}
 

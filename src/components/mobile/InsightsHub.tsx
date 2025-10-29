@@ -161,8 +161,8 @@ export function InsightsHub({ entries }: InsightsHubProps) {
         ? 'linear-gradient(135deg, #181c2b 0%, #232946 100%)'
         : 'linear-gradient(135deg, #E8F6F8 0%, #C9E7F2 100%)'
     }}>
-      <div className="max-w-md mx-auto p-4">
-        <div className="rounded-3xl p-6 mb-6" style={{
+      <div className="max-w-md mx-auto p-6">
+        <div className="rounded-3xl p-6 mb-8" style={{
           background: isDark ? 'linear-gradient(135deg,#2D7A8B,#1a5f6f)' : 'linear-gradient(135deg,#4FB3C5,#2D7A8B)',
           boxShadow: isDark ? '0 8px 32px 0 rgba(31,38,135,0.37)' : '0 8px 32px 0 rgba(80,180,197,0.15)',
           backdropFilter: 'blur(8px)',
@@ -175,8 +175,8 @@ export function InsightsHub({ entries }: InsightsHubProps) {
         </div>
 
         {/* Daily Briefing */}
-        <motion.div layout className="rounded-3xl p-5 mb-5" style={sectionStyle}>
-          <div className="flex items-center gap-2 mb-3"><Sparkles className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Daily Briefing</h3></div>
+        <motion.div layout className="rounded-3xl p-6 mb-6" style={sectionStyle}>
+          <div className="flex items-center gap-2 mb-4"><Sparkles className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Daily Briefing</h3></div>
           {entries.length === 0 && <p className="text-sm" style={{color:isDark?'#bbb':'#2D7A8B'}}>Log a mood to start receiving insights.</p>}
           {entries.length > 0 && (
             <ul className="text-sm space-y-2" style={{color:isDark?'#ccc':'#2D7A8B'}}>
@@ -189,9 +189,9 @@ export function InsightsHub({ entries }: InsightsHubProps) {
         </motion.div>
 
         {/* Wellbeing Score */}
-        <motion.div layout className="rounded-3xl p-5 mb-5" style={sectionStyle}>
-          <div className="flex items-center gap-2 mb-3"><Activity className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Wellbeing Score</h3></div>
-          <div className="space-y-3">
+        <motion.div layout className="rounded-3xl p-6 mb-6" style={sectionStyle}>
+          <div className="flex items-center gap-2 mb-4"><Activity className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Wellbeing Score</h3></div>
+          <div className="space-y-4">
             <div className="h-3 w-full rounded-full overflow-hidden" style={{background:isDark?'#1a2332':'#E8F6F8'}}>
               <motion.div initial={{width:0}} animate={{width:`${wellbeingScore}%`}} transition={{duration:0.8}} className="h-full" style={{background: wellbeingScore>70 ? '#7DD4A8' : wellbeingScore>40? '#FFB84D':'#FF6B6B'}} />
             </div>
@@ -201,8 +201,8 @@ export function InsightsHub({ entries }: InsightsHubProps) {
         </motion.div>
 
         {/* Focus Time Suggestion */}
-        <motion.div layout className="rounded-3xl p-5 mb-5" style={sectionStyle}>
-          <div className="flex items-center gap-2 mb-3"><Timer className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Focus Time</h3></div>
+        <motion.div layout className="rounded-3xl p-6 mb-6" style={sectionStyle}>
+          <div className="flex items-center gap-2 mb-4"><Timer className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Focus Time</h3></div>
           {!focusSuggestion && <p className="text-sm" style={{color:isDark?'#bbb':'#2D7A8B'}}>Need more data to recommend an optimal window.</p>}
           {focusSuggestion && (
             <div>
@@ -214,9 +214,9 @@ export function InsightsHub({ entries }: InsightsHubProps) {
         </motion.div>
 
         {/* Break Reminders */}
-        <motion.div layout className="rounded-3xl p-5 mb-5" style={sectionStyle}>
-          <div className="flex items-center gap-2 mb-3"><Coffee className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Break Reminders</h3></div>
-          <div className="space-y-3">
+        <motion.div layout className="rounded-3xl p-6 mb-6" style={sectionStyle}>
+          <div className="flex items-center gap-2 mb-4"><Coffee className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Break Reminders</h3></div>
+          <div className="space-y-4">
             <label className="flex items-center gap-2 text-sm" style={{color:isDark?'#ccc':'#2D7A8B'}}>
               Interval (minutes):
               <select aria-label="Break interval" value={breakIntervalMin} onChange={e=> setBreakIntervalMin(parseInt(e.target.value))} className="px-2 py-1 rounded" style={{background:isDark?'#232946':'#E8F6F8', color:isDark?'#fff':'#2D7A8B'}}>
@@ -229,8 +229,8 @@ export function InsightsHub({ entries }: InsightsHubProps) {
         </motion.div>
 
         {/* Quiet Hours */}
-        <motion.div layout className="rounded-3xl p-5 mb-5" style={sectionStyle}>
-          <div className="flex items-center gap-2 mb-3"><Moon className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Quiet Hours</h3></div>
+        <motion.div layout className="rounded-3xl p-6 mb-6" style={sectionStyle}>
+          <div className="flex items-center gap-2 mb-4"><Moon className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Quiet Hours</h3></div>
           <div className="flex flex-wrap gap-4 items-end mb-3">
             <label className="flex flex-col text-xs" style={{color:isDark?'#ccc':'#2D7A8B'}}>Start
               <input aria-label="Quiet hours start" type="number" min={0} max={23} value={quietStart} onChange={e=> setQuietStart(parseInt(e.target.value)||0)} className="mt-1 px-2 py-1 rounded" style={{background:isDark?'#232946':'#E8F6F8', color:isDark?'#fff':'#2D7A8B'}} />
@@ -243,8 +243,8 @@ export function InsightsHub({ entries }: InsightsHubProps) {
         </motion.div>
 
         {/* Weekly Digest */}
-        <motion.div layout className="rounded-3xl p-5 mb-24" style={sectionStyle}>
-          <div className="flex items-center gap-2 mb-3"><CalendarDays className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Weekly Digest</h3></div>
+        <motion.div layout className="rounded-3xl p-6 mb-24" style={sectionStyle}>
+          <div className="flex items-center gap-2 mb-4"><CalendarDays className="w-5 h-5"/><h3 className="text-lg font-semibold" style={{color:isDark?'#fff':'#2D7A8B'}}>Weekly Digest</h3></div>
           {last7.length === 0 && <p className="text-sm" style={{color:isDark?'#bbb':'#2D7A8B'}}>Not enough data yet.</p>}
           {last7.length>0 && (
             <div className="space-y-2 text-sm" style={{color:isDark?'#ccc':'#2D7A8B'}}>

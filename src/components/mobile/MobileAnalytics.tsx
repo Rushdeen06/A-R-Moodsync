@@ -243,10 +243,13 @@ export function MobileAnalytics({ entries }: MobileAnalyticsProps) {
                 <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2d7a8b44' : '#4fb3c544'} />
                 <XAxis 
                   dataKey="time" 
-                  tick={{ fill: isDark ? '#fff' : '#2D7A8B', fontSize: 10 }}
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
+                  tick={{ fill: isDark ? '#fff' : '#2D7A8B', fontSize: 9 }}
+                  interval="preserveStartEnd"
+                  tickFormatter={(value) => {
+                    // Show only date without time for cleaner display
+                    const date = new Date(value);
+                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                  }}
                 />
                 <YAxis 
                   domain={[0, 5]}

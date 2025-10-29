@@ -279,7 +279,7 @@ export default function App() {
           onSubmitMood={handleMoodSubmit}
           currentStreak={currentStreak}
           userName={user!.name}
-          onNavigate={setCurrentScreen}
+          onNavigate={(screen) => setCurrentScreen(screen as Screen)}
         />
       )}
 

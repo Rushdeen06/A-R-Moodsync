@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { Button } from '../ui/button';
 import { Play, Pause, RotateCcw, Wind, ArrowLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -134,33 +134,31 @@ export function MobileBreathing({ onComplete }: MobileBreathingProps) {
             />
 
             {/* Animated breathing circle */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={phase}
-                className="rounded-full flex items-center justify-center"
-                animate={{
-                  width: getCircleSize(),
-                  height: getCircleSize(),
-                }}
-                transition={{
-                  duration: DURATIONS[phase],
-                  ease: 'easeInOut',
-                }}
-                style={{
-                  backgroundColor: getPhaseColor(),
-                  opacity: 0.8,
-                }}
-              >
-                <div className="text-center text-white">
-                  <p className="text-4xl mb-2 capitalize">
-                    {phase}
-                  </p>
-                  <p className="text-6xl font-bold">
-                    {DURATIONS[phase] - count}
-                  </p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+            <motion.div
+              key={phase}
+              className="rounded-full flex items-center justify-center"
+              animate={{
+                width: getCircleSize(),
+                height: getCircleSize(),
+              }}
+              transition={{
+                duration: DURATIONS[phase],
+                ease: 'easeInOut',
+              }}
+              style={{
+                backgroundColor: getPhaseColor(),
+                opacity: 0.8,
+              }}
+            >
+              <div className="text-center text-white">
+                <p className="text-4xl mb-2 capitalize">
+                  {phase}
+                </p>
+                <p className="text-6xl font-bold">
+                  {DURATIONS[phase] - count}
+                </p>
+              </div>
+            </motion.div>
           </div>
         </div>
 

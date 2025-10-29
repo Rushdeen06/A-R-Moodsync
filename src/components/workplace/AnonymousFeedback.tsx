@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useTheme } from '../../utils/ThemeProvider';
-import { MessageSquare, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from '../ui/sonner';
 
 interface AnonymousFeedbackProps {
@@ -17,7 +17,7 @@ const CATEGORIES = [
   { value: 'other', label: 'Other Concerns', icon: '💭' },
 ];
 
-export function AnonymousFeedback({ teamId, onSubmit }: AnonymousFeedbackProps) {
+export function AnonymousFeedback({ onSubmit }: AnonymousFeedbackProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   

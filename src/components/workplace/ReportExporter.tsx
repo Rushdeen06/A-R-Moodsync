@@ -37,7 +37,7 @@ const REPORT_TYPES = [
   },
 ];
 
-export function ReportExporter({ teamId, teamName, onGenerateReport }: ReportExporterProps) {
+export function ReportExporter({ teamName, onGenerateReport }: ReportExporterProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 

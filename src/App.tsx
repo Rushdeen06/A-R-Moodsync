@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, useEffect, Suspense, lazy, useMemo } from 'react';
 // Keep only login/onboarding/profile dynamic, dashboard unified screen eagerly loaded to reduce complexity
 const MobileLoginScreen = lazy(() => import('./components/mobile/MobileLoginScreen').then(m => ({ default: m.MobileLoginScreen })));
 const MobileOnboarding = lazy(() => import('./components/mobile/MobileOnboarding').then(m => ({ default: m.MobileOnboarding })));
@@ -35,10 +35,16 @@ type Screen = 'dashboard' | 'analytics' | 'history' | 'profile';
 export default function App() {
   // Apply theme from localStorage on mount
   useEffect(() => {
-    const theme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+    try {
+      const theme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (error) {
+      console.error('Failed to load theme from localStorage:', error);
+      // Fallback to light theme
+      document.documentElement.setAttribute('data-theme', 'light');
     }
   }, []);
   const [user, setUser] = useState(null as User | null);
@@ -48,8 +54,8 @@ export default function App() {
   // Latest mood state removed in simplified version
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // Calculate streak
-  const currentStreak = (() => {
+  // Calculate streak with memoization
+  const currentStreak = useMemo(() => {
     if (entries.length === 0) return 0;
     
     const sortedEntries = [...entries].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
@@ -71,23 +77,39 @@ export default function App() {
     }
     
     return streak;
-  })();
+  }, [entries]);
 
   // Check for existing session and load data
   useEffect(() => {
     const checkSession = async () => {
-      const savedUser = localStorage.getItem('moodsync_user');
-      const accessToken = api.getAccessToken();
-      
-      if (savedUser && accessToken) {
+      try {
+        const savedUser = localStorage.getItem('moodsync_user');
+        const accessToken = api.getAccessToken();
+        
+        if (savedUser && accessToken) {
+          try {
+            const userData = JSON.parse(savedUser);
+            // Validate userData structure
+            if (userData && typeof userData === 'object' && userData.name && userData.email) {
+              setUser({ ...userData, accessToken });
+              await loadUserData();
+            } else {
+              throw new Error('Invalid user data format');
+            }
+          } catch (parseError) {
+            console.error('Failed to parse saved user data:', parseError);
+            api.signout();
+            localStorage.removeItem('moodsync_user');
+            toast.error('Session data corrupted. Please log in again.');
+          }
+        }
+      } catch (error) {
+        console.error('Session check failed:', error);
+        // Clear potentially corrupted data
         try {
-          const userData = JSON.parse(savedUser);
-          setUser({ ...userData, accessToken });
-          await loadUserData();
-        } catch (error) {
-          console.error('Session restoration failed:', error);
-          api.signout();
           localStorage.removeItem('moodsync_user');
+        } catch (cleanupError) {
+          console.error('Failed to clean up localStorage:', cleanupError);
         }
       }
     };
@@ -115,17 +137,33 @@ export default function App() {
   // Save user to localStorage
   useEffect(() => {
     if (user) {
-      const { accessToken, ...userData } = user;
-      localStorage.setItem('moodsync_user', JSON.stringify(userData));
+      try {
+        const { accessToken, ...userData } = user;
+        localStorage.setItem('moodsync_user', JSON.stringify(userData));
+      } catch (error) {
+        console.error('Failed to save user to localStorage:', error);
+        // Check if quota exceeded
+        if (error instanceof Error && error.name === 'QuotaExceededError') {
+          toast.error('Storage quota exceeded. Please clear some data.');
+        } else {
+          toast.error('Failed to save user data locally');
+        }
+      }
     }
   }, [user]);
 
   const handleLogin = async (name: string, email: string, accessToken: string) => {
     setUser({ name, email, accessToken });
     
-    // Check if this is first time user (no onboarding seen)
-    const hasSeenOnboarding = localStorage.getItem('moodsync_onboarding_complete');
-    if (!hasSeenOnboarding) {
+    try {
+      // Check if this is first time user (no onboarding seen)
+      const hasSeenOnboarding = localStorage.getItem('moodsync_onboarding_complete');
+      if (!hasSeenOnboarding) {
+        setShowOnboarding(true);
+      }
+    } catch (error) {
+      console.error('Failed to check onboarding status:', error);
+      // Default to showing onboarding if check fails
       setShowOnboarding(true);
     }
     
@@ -133,15 +171,25 @@ export default function App() {
   };
 
   const handleOnboardingComplete = () => {
-    localStorage.setItem('moodsync_onboarding_complete', 'true');
-    setShowOnboarding(false);
+    try {
+      localStorage.setItem('moodsync_onboarding_complete', 'true');
+      setShowOnboarding(false);
+    } catch (error) {
+      console.error('Failed to save onboarding status:', error);
+      // Still hide onboarding even if save fails
+      setShowOnboarding(false);
+    }
   };
 
   const handleLogout = () => {
     api.signout();
     setUser(null);
     setEntries([]);
-    localStorage.removeItem('moodsync_user');
+    try {
+      localStorage.removeItem('moodsync_user');
+    } catch (error) {
+      console.error('Failed to clear user from localStorage:', error);
+    }
     toast('Logged out successfully');
   };
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTheme } from '../../utils/ThemeProvider';
 import { motion } from 'motion/react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -15,19 +15,21 @@ export function MobileAnalytics({ entries }: MobileAnalyticsProps) {
   const isDark = theme === 'dark';
   const [timeRange, setTimeRange] = useState<TimeRange>('7d');
 
-  // Filter entries based on selected time range
-  const filteredEntries = entries.filter(e => {
-    const now = new Date();
-    const entryDate = new Date(e.timestamp);
-    if (timeRange === '7d') {
-      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      return entryDate >= weekAgo;
-    } else if (timeRange === '30d') {
-      const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      return entryDate >= monthAgo;
-    }
-    return true; // 'all'
-  });
+  // Filter entries based on selected time range with memoization
+  const filteredEntries = useMemo(() => {
+    return entries.filter(e => {
+      const now = new Date();
+      const entryDate = new Date(e.timestamp);
+      if (timeRange === '7d') {
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return entryDate >= weekAgo;
+      } else if (timeRange === '30d') {
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        return entryDate >= monthAgo;
+      }
+      return true; // 'all'
+    });
+  }, [entries, timeRange]);
 
   // Calculate time-of-day patterns
   const morningEntries = filteredEntries.filter(e => {

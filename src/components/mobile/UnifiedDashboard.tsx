@@ -195,6 +195,10 @@ export function UnifiedDashboard({ entries, onSubmitMood, currentStreak, userNam
                   whileHover={{ scale: 1.08 }}
                   key={m.value}
                   onClick={() => setSelectedMood(m.value)}
+                  aria-label={`Select ${m.label} mood`}
+                  aria-pressed={isSelected}
+                  role="button"
+                  tabIndex={0}
                   className={`flex flex-col items-center flex-1 py-3 rounded-2xl shadow-md transition-all duration-200 relative overflow-hidden`}
                   style={{
                     background: isSelected
@@ -237,6 +241,7 @@ export function UnifiedDashboard({ entries, onSubmitMood, currentStreak, userNam
               placeholder="Add a quick note (optional)"
               value={note}
               onChange={e => setNote(e.target.value)}
+              aria-label="Add optional note about your mood"
               className="w-full min-h-[90px] rounded-xl border-none resize-none text-base font-medium"
               style={{ 
                 backgroundColor: isDark ? '#232946' : '#F5F8FA', 
@@ -248,6 +253,8 @@ export function UnifiedDashboard({ entries, onSubmitMood, currentStreak, userNam
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setShowQuickNotes(!showQuickNotes)}
+              aria-label={showQuickNotes ? "Hide quick note suggestions" : "Show quick note suggestions"}
+              aria-expanded={showQuickNotes}
               className="absolute right-3 top-3 p-2 rounded-lg"
               style={{
                 backgroundColor: isDark ? '#2d3748' : '#E8F6F8',
@@ -277,6 +284,7 @@ export function UnifiedDashboard({ entries, onSubmitMood, currentStreak, userNam
                     transition={{ delay: idx * 0.03 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleQuickNote(qn)}
+                    aria-label={`Add quick note: ${qn}`}
                     className="px-3 py-1.5 rounded-full text-xs font-semibold"
                     style={{
                       backgroundColor: isDark ? '#2d3748' : 'white',
@@ -294,6 +302,7 @@ export function UnifiedDashboard({ entries, onSubmitMood, currentStreak, userNam
           <Button
             disabled={!selectedMood}
             onClick={handleSubmit}
+            aria-label={selectedMood ? "Submit mood entry" : "Please select a mood first"}
             className="w-full h-14 rounded-xl text-white font-semibold text-lg shadow-lg transition-all"
             style={{ 
               background: selectedMood 

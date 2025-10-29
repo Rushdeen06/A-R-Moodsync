@@ -1,7 +1,7 @@
 import { useTheme } from '../../utils/ThemeProvider';
 import { motion } from 'motion/react';
 import { Calendar as CalendarIcon, Clock } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 interface MobileHistoryProps {
   entries: { mood: string; note: string; intensity: number; timestamp: Date }[];
@@ -12,34 +12,38 @@ export function MobileHistory({ entries }: MobileHistoryProps) {
   const isDark = theme === 'dark';
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  // Get current month calendar days
+  // Get current month calendar days with memoization
   const today = new Date();
   const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
-  const firstDay = new Date(currentYear, currentMonth, 1);
-  const lastDay = new Date(currentYear, currentMonth + 1, 0);
-  const daysInMonth = lastDay.getDate();
-  const startingDayOfWeek = firstDay.getDay();
+  
+  const calendarDays = useMemo(() => {
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
 
-  const calendarDays = [];
-  for (let i = 0; i < startingDayOfWeek; i++) {
-    calendarDays.push(null);
-  }
-  for (let day = 1; day <= daysInMonth; day++) {
-    calendarDays.push(day);
-  }
+    const days = [];
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(null);
+    }
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(day);
+    }
+    return days;
+  }, [currentMonth, currentYear]);
 
-  const getEntryForDay = (day: number) => {
+  const getEntriesForDay = (day: number) => {
     const date = new Date(currentYear, currentMonth, day);
-    return entries.find(e => {
+    return entries.filter(e => {
       const entryDate = new Date(e.timestamp);
       return entryDate.toDateString() === date.toDateString();
     });
   };
 
-  const selectedEntry = selectedDate ? entries.find(e => 
+  const selectedEntries = selectedDate ? entries.filter(e => 
     new Date(e.timestamp).toDateString() === selectedDate.toDateString()
-  ) : null;
+  ) : [];
 
   return (
     <div className="min-h-screen pb-24 relative" style={{
@@ -89,7 +93,11 @@ export function MobileHistory({ entries }: MobileHistoryProps) {
             {calendarDays.map((day, idx) => {
               if (!day) return <div key={idx} />;
               
-              const entry = getEntryForDay(day);
+              const dayEntries = getEntriesForDay(day);
+              const hasEntries = dayEntries.length > 0;
+              const avgIntensity = hasEntries 
+                ? dayEntries.reduce((sum, e) => sum + e.intensity, 0) / dayEntries.length 
+                : 0;
               const isToday = day === today.getDate();
               const date = new Date(currentYear, currentMonth, day);
               const isSelected = selectedDate?.toDateString() === date.toDateString();
@@ -99,22 +107,39 @@ export function MobileHistory({ entries }: MobileHistoryProps) {
                   key={idx}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setSelectedDate(date)}
+                  aria-label={`${date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}${hasEntries ? `, ${dayEntries.length} ${dayEntries.length === 1 ? 'entry' : 'entries'} logged` : ', no entries'}`}
+                  aria-pressed={isSelected}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e: React.KeyboardEvent) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedDate(date);
+                    }
+                  }}
                   className="aspect-square rounded-xl flex flex-col items-center justify-center relative"
                   style={{
-                    background: entry 
-                      ? entry.intensity >= 4 ? '#7DD4A8' : entry.intensity === 3 ? '#FFB84D' : '#FF6B6B'
+                    background: hasEntries 
+                      ? avgIntensity >= 4 ? '#7DD4A8' : avgIntensity >= 3 ? '#FFB84D' : '#FF6B6B'
                       : isDark ? '#232946' : '#F5F8FA',
                     border: isSelected ? '2px solid #4FB3C5' : isToday ? '2px solid #FFB84D' : 'none',
                     boxShadow: isSelected ? '0 4px 12px #4fb3c544' : 'none'
                   }}
                 >
-                  <span className="text-sm font-bold" style={{ color: entry ? 'white' : isDark ? '#fff' : '#2D7A8B' }}>
+                  <span className="text-sm font-bold" style={{ color: hasEntries ? 'white' : isDark ? '#fff' : '#2D7A8B' }}>
                     {day}
                   </span>
-                  {entry && (
-                    <span className="text-xs mt-1">
-                      {entry.intensity >= 4 ? '😊' : entry.intensity === 3 ? '😐' : '😔'}
-                    </span>
+                  {hasEntries && (
+                    <div className="flex items-center gap-0.5">
+                      <span className="text-xs">
+                        {avgIntensity >= 4 ? '😊' : avgIntensity >= 3 ? '😐' : '😔'}
+                      </span>
+                      {dayEntries.length > 1 && (
+                        <span className="text-[8px] font-bold bg-white/80 px-1 rounded-full" style={{ color: '#2D7A8B' }}>
+                          {dayEntries.length}
+                        </span>
+                      )}
+                    </div>
                   )}
                 </motion.button>
               );
@@ -123,7 +148,7 @@ export function MobileHistory({ entries }: MobileHistoryProps) {
         </div>
 
         {/* Selected Entry Details */}
-        {selectedEntry && (
+        {selectedEntries.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -136,40 +161,47 @@ export function MobileHistory({ entries }: MobileHistoryProps) {
             }}
           >
             <h3 className="text-lg font-bold mb-3" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
-              Entry Details
+              {selectedEntries.length === 1 ? 'Entry Details' : `${selectedEntries.length} Entries`}
             </h3>
-            <div className="flex items-center gap-4 mb-4">
-              <span className="text-5xl">
-                {selectedEntry.intensity >= 4 ? '😊' : selectedEntry.intensity === 3 ? '😐' : selectedEntry.intensity === 2 ? '😔' : '😢'}
-              </span>
-              <div className="flex-1">
-                <p className="text-xl font-bold mb-1" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
-                  {selectedEntry.mood.charAt(0).toUpperCase() + selectedEntry.mood.slice(1)}
-                </p>
-                <div className="flex items-center gap-2 text-sm" style={{ color: isDark ? '#bbb' : '#A8C9C7' }}>
-                  <Clock className="w-4 h-4" />
-                  <span>{new Date(selectedEntry.timestamp).toLocaleString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    month: 'short',
-                    day: 'numeric'
-                  })}</span>
+            <div className="space-y-4">
+              {selectedEntries.map((entry, idx) => (
+                <div key={idx} className="rounded-2xl p-4" style={{ background: isDark ? '#232946' : '#F5F8FA' }}>
+                  <div className="flex items-center gap-4 mb-3">
+                    <span className="text-4xl">
+                      {entry.intensity >= 4 ? '😊' : entry.intensity === 3 ? '😐' : entry.intensity === 2 ? '😔' : '😢'}
+                    </span>
+                    <div className="flex-1">
+                      <p className="text-lg font-bold mb-1" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+                        {entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)}
+                      </p>
+                      <div className="flex items-center gap-2 text-sm" style={{ color: isDark ? '#bbb' : '#A8C9C7' }}>
+                        <Clock className="w-4 h-4" />
+                        <span>{new Date(entry.timestamp).toLocaleString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          month: 'short',
+                          day: 'numeric'
+                        })}</span>
+                      </div>
+                    </div>
+                    <span className="text-base font-bold px-3 py-1 rounded-full" style={{
+                      backgroundColor: entry.intensity >= 4 ? '#7DD4A8' : entry.intensity === 3 ? '#FFB84D' : '#FF6B6B',
+                      color: 'white'
+                    }}>
+                      {entry.intensity}/5
+                    </span>
+                  </div>
+                  {entry.note && (
+                    <p className="text-sm font-medium px-3 py-2 rounded-lg" style={{ 
+                      color: isDark ? '#ccc' : '#2D7A8B',
+                      background: isDark ? '#1a2332' : '#fff'
+                    }}>
+                      {entry.note}
+                    </p>
+                  )}
                 </div>
-              </div>
-              <span className="text-lg font-bold px-4 py-2 rounded-full" style={{
-                backgroundColor: selectedEntry.intensity >= 4 ? '#7DD4A8' : selectedEntry.intensity === 3 ? '#FFB84D' : '#FF6B6B',
-                color: 'white'
-              }}>
-                {selectedEntry.intensity}/5
-              </span>
+              ))}
             </div>
-            {selectedEntry.note && (
-              <div className="p-4 rounded-xl" style={{ background: isDark ? '#232946' : '#F5F8FA' }}>
-                <p className="text-sm font-medium" style={{ color: isDark ? '#ccc' : '#2D7A8B' }}>
-                  {selectedEntry.note}
-                </p>
-              </div>
-            )}
           </motion.div>
         )}
 

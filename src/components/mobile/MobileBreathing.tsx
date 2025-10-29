@@ -1,4 +1,4 @@
-﻿import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '../ui/button';
 import { Play, Pause, RotateCcw, Wind, ArrowLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -81,30 +81,25 @@ export function MobileBreathing({ onComplete }: MobileBreathingProps) {
       style={{ backgroundColor: '#E8F6F8' }}
     >
       <div className="max-w-md mx-auto p-6 flex-1 flex flex-col relative">
-        {/* Header */}
-
         {/* Back Button */}
-
         {onComplete && (
-
-          <button
-
+          <motion.button
             onClick={onComplete}
-
-            className="absolute top-0 left-0 p-2 rounded-lg"
-
-            style={{ color: '#2D7A8B' }}
-
+            className="absolute top-4 left-4 p-2 rounded-lg backdrop-blur-sm z-10"
+            style={{
+              color: '#2D7A8B',
+              backgroundColor: 'rgba(255,255,255,0.9)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             aria-label="Go back"
-
           >
-
             <ArrowLeft className="w-6 h-6" />
-
-          </button>
-
+          </motion.button>
         )}
-
+        
+        {/* Header */}
         <div className="text-center mb-8">
           <div 
             className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
@@ -190,7 +185,7 @@ export function MobileBreathing({ onComplete }: MobileBreathingProps) {
             </div>
             <div>
               <p className="text-2xl mb-1" style={{ color: '#2D7A8B' }}>
-                {phase === 'inhale' ? 'â†‘' : phase === 'exhale' ? 'â†“' : 'â€¢'}
+                {phase === 'inhale' ? '↑' : phase === 'exhale' ? '↓' : '•'}
               </p>
               <p className="text-xs capitalize" style={{ color: '#4FB3C5' }}>
                 {phase}
@@ -255,4 +250,3 @@ export function MobileBreathing({ onComplete }: MobileBreathingProps) {
     </motion.div>
   );
 }
-

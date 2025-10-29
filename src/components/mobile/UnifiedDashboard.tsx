@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
-import { Heart, Target, Award, Sparkles, TrendingUp, Clock, Lightbulb } from 'lucide-react';
+import { Heart, Target, Award, Sparkles, TrendingUp, Clock, Lightbulb, Wind } from 'lucide-react';
 import { useTheme } from '../../utils/ThemeProvider';
 
 interface UnifiedDashboardProps {
@@ -10,6 +10,7 @@ interface UnifiedDashboardProps {
   onSubmitMood: (mood: string, note: string) => void;
   currentStreak: number;
   userName: string;
+  onNavigate?: (screen: string) => void;
 }
 
 const MOODS = [
@@ -44,7 +45,7 @@ function getTimeAgo(date: Date): string {
   return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-export function UnifiedDashboard({ entries, onSubmitMood, currentStreak, userName }: UnifiedDashboardProps) {
+export function UnifiedDashboard({ entries, onSubmitMood, currentStreak, userName, onNavigate }: UnifiedDashboardProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const [selectedMood, setSelectedMood] = useState<string>('');
@@ -318,11 +319,37 @@ export function UnifiedDashboard({ entries, onSubmitMood, currentStreak, userNam
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-4 mb-7">
+        <div className="grid grid-cols-3 gap-4 mb-5">
           <StatCard label="Total Logs" value={entries.length.toString()} icon={<Heart className="w-5 h-5" style={{ color: '#FF6B6B' }} />} isDark={isDark} />
           <StatCard label="Streak" value={currentStreak.toString()} icon={<Award className="w-5 h-5" style={{ color: '#FFB84D' }} />} isDark={isDark} />
           <StatCard label="Avg Mood" value={avgMood.toFixed(1)} icon={<Target className="w-5 h-5" style={{ color: '#4FB3C5' }} />} isDark={isDark} />
         </div>
+
+        {/* Quick Actions */}
+        {onNavigate && (
+          <motion.button
+            onClick={() => onNavigate('breathing')}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full rounded-2xl p-5 mb-6 shadow-lg flex items-center justify-between"
+            style={{
+              background: isDark
+                ? 'linear-gradient(135deg, #9B7FD8 0%, #7B5FC5 100%)'
+                : 'linear-gradient(135deg, #B8A4E8 0%, #9B7FD8 100%)',
+            }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white bg-opacity-20 backdrop-blur-sm">
+                <Wind className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-left">
+                <p className="text-white font-semibold text-lg">Breathing Exercise</p>
+                <p className="text-white text-opacity-90 text-sm">Take a mindful break</p>
+              </div>
+            </div>
+            <Sparkles className="w-5 h-5 text-white text-opacity-80" />
+          </motion.button>
+        )}
 
         {/* Recent Entries with enhanced info */}
         <div className="rounded-3xl p-5 mb-7 shadow-xl" style={{

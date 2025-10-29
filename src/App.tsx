@@ -6,6 +6,7 @@ const MobileProfile = lazy(() => import('./components/mobile/MobileProfile').the
 const MobileAnalytics = lazy(() => import('./components/mobile/MobileAnalytics').then(m => ({ default: m.MobileAnalytics })));
 const MobileHistory = lazy(() => import('./components/mobile/MobileHistory').then(m => ({ default: m.MobileHistory })));
 const InsightsHub = lazy(() => import('./components/mobile/InsightsHub').then(m => ({ default: m.InsightsHub })));
+const MobileBreathing = lazy(() => import('./components/mobile/MobileBreathing').then(m => ({ default: m.MobileBreathing })));
 import { UnifiedDashboard } from './components/mobile/UnifiedDashboard';
 // Keep lightweight, frequently visible UI components eagerly loaded
 // Simplified navigation: only dashboard & profile; remove floating action
@@ -31,7 +32,7 @@ interface MoodEntry {
   category?: string;
 }
 
-type Screen = 'dashboard' | 'analytics' | 'history' | 'insights' | 'profile';
+type Screen = 'dashboard' | 'analytics' | 'history' | 'insights' | 'profile' | 'breathing';
 
 export default function App() {
   // Apply theme from localStorage on mount
@@ -278,6 +279,7 @@ export default function App() {
           onSubmitMood={handleMoodSubmit}
           currentStreak={currentStreak}
           userName={user!.name}
+          onNavigate={setCurrentScreen}
         />
       )}
 
@@ -308,6 +310,12 @@ export default function App() {
             currentStreak={currentStreak}
             onLogout={handleLogout}
           />
+        </Suspense>
+      )}
+
+      {currentScreen === 'breathing' && (
+        <Suspense fallback={<LoadingFallback />}>
+          <MobileBreathing onComplete={() => setCurrentScreen('dashboard')} />
         </Suspense>
       )}
 

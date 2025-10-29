@@ -89,7 +89,7 @@ export function UnifiedDashboard({ entries, onSubmitMood, currentStreak, userNam
   const recent = [...entries].sort((a,b) => b.timestamp.getTime() - a.timestamp.getTime()).slice(0,5);
 
   return (
-    <div className="min-h-screen pb-24 relative" style={{
+    <div className="min-h-screen pb-32 relative" style={{
       background: isDark
         ? 'linear-gradient(135deg, #181c2b 0%, #232946 100%)'
         : 'linear-gradient(135deg, #E8F6F8 0%, #C9E7F2 100%)',
@@ -432,7 +432,7 @@ export function UnifiedDashboard({ entries, onSubmitMood, currentStreak, userNam
         </div>
 
         {/* Placeholder mini heatmap (future) */}
-        <div className="rounded-3xl p-5 mb-8 shadow-xl" style={{
+        <div className="rounded-3xl p-5 mb-16 shadow-xl" style={{
           background: isDark ? 'rgba(45, 55, 72, 0.85)' : 'rgba(255,255,255,0.85)',
           boxShadow: isDark ? '0 4px 24px 0 #2d7a8b22' : '0 4px 24px 0 #4fb3c522',
           backdropFilter: 'blur(10px)',

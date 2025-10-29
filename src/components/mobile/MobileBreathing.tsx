@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from 'motion/react';
+﻿import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '../ui/button';
-import { Play, Pause, RotateCcw, Wind } from 'lucide-react';
+import { Play, Pause, RotateCcw, Wind, ArrowLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface MobileBreathingProps {
@@ -80,8 +80,31 @@ export function MobileBreathing({ onComplete }: MobileBreathingProps) {
       className="min-h-screen pb-20 flex flex-col"
       style={{ backgroundColor: '#E8F6F8' }}
     >
-      <div className="max-w-md mx-auto p-6 flex-1 flex flex-col">
+      <div className="max-w-md mx-auto p-6 flex-1 flex flex-col relative">
         {/* Header */}
+
+        {/* Back Button */}
+
+        {onComplete && (
+
+          <button
+
+            onClick={onComplete}
+
+            className="absolute top-0 left-0 p-2 rounded-lg"
+
+            style={{ color: '#2D7A8B' }}
+
+            aria-label="Go back"
+
+          >
+
+            <ArrowLeft className="w-6 h-6" />
+
+          </button>
+
+        )}
+
         <div className="text-center mb-8">
           <div 
             className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
@@ -167,7 +190,7 @@ export function MobileBreathing({ onComplete }: MobileBreathingProps) {
             </div>
             <div>
               <p className="text-2xl mb-1" style={{ color: '#2D7A8B' }}>
-                {phase === 'inhale' ? '↑' : phase === 'exhale' ? '↓' : '•'}
+                {phase === 'inhale' ? 'â†‘' : phase === 'exhale' ? 'â†“' : 'â€¢'}
               </p>
               <p className="text-xs capitalize" style={{ color: '#4FB3C5' }}>
                 {phase}
@@ -232,3 +255,4 @@ export function MobileBreathing({ onComplete }: MobileBreathingProps) {
     </motion.div>
   );
 }
+

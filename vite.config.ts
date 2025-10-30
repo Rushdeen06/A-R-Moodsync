@@ -5,11 +5,12 @@
   import { visualizer } from 'rollup-plugin-visualizer';
 
   export default defineConfig({
-    base: process.env.NODE_ENV === 'production' ? '/A-R-Moodsync/' : '/',
+    base: '/', // Changed from '/A-R-Moodsync/' for custom domain
     plugins: [
       react(),
       ...(process.env.ANALYZE ? [visualizer({ filename: 'build/stats.html', gzipSize: true, brotliSize: true })] : [])
     ],
+    publicDir: 'public', // Ensure CNAME file is copied
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
@@ -73,7 +74,6 @@
         },
       },
     },
-    publicDir: 'public',
     server: {
       port: 3000,
       open: true,

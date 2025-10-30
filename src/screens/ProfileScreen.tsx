@@ -8,6 +8,7 @@ interface ProfileScreenProps {
   totalEntries: number;
   currentStreak: number;
   onLogout: () => void;
+  entries?: Array<{ mood: string; intensity?: number }>;
 }
 
 export function ProfileScreen(props: ProfileScreenProps) {

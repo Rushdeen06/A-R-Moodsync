@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { Button } from '../ui/button';
 import { Settings, LogOut, Award, Moon, Sun, Download, Heart, Trophy, Target } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
+import { MoodStatsChart } from '../MoodStatsChart';
 import { useTheme } from '../../utils/ThemeProvider';
 import { UserPrivacyPanel } from '../UserPrivacyPanel';
 
@@ -11,9 +12,10 @@ interface MobileProfileProps {
   totalEntries: number;
   currentStreak: number;
   onLogout: () => void;
+  entries?: Array<{ mood: string; intensity?: number }>;
 }
 
-export function MobileProfile({ userName, userEmail, totalEntries, currentStreak, onLogout }: MobileProfileProps) {
+export function MobileProfile({ userName, userEmail, totalEntries, currentStreak, onLogout, entries = [] }: MobileProfileProps) {
   // Simplified profile: remove notifications & app settings modal
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -175,6 +177,12 @@ export function MobileProfile({ userName, userEmail, totalEntries, currentStreak
               To 100
             </p>
           </motion.div>
+        </div>
+
+        {/* Mood Stats */}
+        <div className="rounded-3xl p-4 mb-6 shadow-sm" style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}>
+          <p className="text-sm font-semibold mb-3" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>Mood Distribution</p>
+          <MoodStatsChart entries={entries} />
         </div>
 
         {/* Privacy panel */}

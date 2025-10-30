@@ -105,7 +105,7 @@ function AppInner() {
               <Route path='/analytics' element={<AnalyticsScreen entries={entries} />} />
               <Route path='/history' element={<HistoryScreen entries={entries} />} />
               <Route path='/insights' element={<InsightsScreen entries={entries} />} />
-              <Route path='/profile' element={<ProfileScreen userName={user!.name} userEmail={user!.email} totalEntries={entries.length} currentStreak={currentStreak} onLogout={handleLogout} />} />
+              <Route path='/profile' element={<ProfileScreen userName={user!.name} userEmail={user!.email} totalEntries={entries.length} currentStreak={currentStreak} onLogout={handleLogout} entries={entries} />} />
               <Route path='/breathing' element={<BreathingScreen onComplete={()=>navigate('/')} />} />
               <Route path='/social' element={<SocialBoardScreen entries={entries} />} />
             </Routes>
@@ -117,7 +117,7 @@ function AppInner() {
             <Route path='/analytics' element={<AnalyticsScreen entries={entries} />} />
             <Route path='/history' element={<HistoryScreen entries={entries} />} />
             <Route path='/insights' element={<InsightsScreen entries={entries} />} />
-            <Route path='/profile' element={<ProfileScreen userName={user!.name} userEmail={user!.email} totalEntries={entries.length} currentStreak={currentStreak} onLogout={handleLogout} />} />
+            <Route path='/profile' element={<ProfileScreen userName={user!.name} userEmail={user!.email} totalEntries={entries.length} currentStreak={currentStreak} onLogout={handleLogout} entries={entries} />} />
             <Route path='/breathing' element={<BreathingScreen onComplete={()=>navigate('/')} />} />
             <Route path='/social' element={<SocialBoardScreen entries={entries} />} />
           </Routes>

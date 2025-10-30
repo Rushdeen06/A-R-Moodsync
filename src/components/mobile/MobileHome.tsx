@@ -2,7 +2,6 @@ import { motion } from 'motion/react';
 import { Button } from '../ui/button';
 import { Menu, TrendingUp, Flame, Calendar, Heart, Sparkles, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useTheme } from '../../utils/ThemeProvider';
 
 interface MobileHomeProps {
   userName: string;
@@ -25,8 +24,6 @@ export function MobileHome({
   currentStreak = 0,
   weekMoodAverage = 3.5
 }: MobileHomeProps) {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
   const [greeting, setGreeting] = useState('');
   const [motivationalQuote, setMotivationalQuote] = useState('');
 
@@ -86,77 +83,73 @@ export function MobileHome({
             style={{ backgroundColor: '#fff', borderColor: '#e0e0e0' }}
           >
             <div className="flex justify-center mb-2">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: isDark ? '#3d3d3d' : '#FFE6E6' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#FFE6E6' }}>
                 <Flame className="w-5 h-5" style={{ color: '#FF6B6B' }} />
               </div>
             </div>
-            <p className="text-2xl font-bold text-center mb-1" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+            <p className="text-2xl font-bold text-center mb-1" style={{ color: '#252423' }}>
               {currentStreak}
             </p>
-            <p className="text-xs text-center" style={{ color: isDark ? '#999' : '#A8C9C7' }}>
+            <p className="text-xs text-center" style={{ color: '#616161' }}>
               Day Streak
             </p>
           </motion.div>
 
           <motion.div
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="rounded-2xl p-4 shadow-sm"
-            style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
+            className="rounded-md p-4 border"
+            style={{ backgroundColor: '#fff', borderColor: '#e0e0e0' }}
           >
             <div className="flex justify-center mb-2">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: isDark ? '#3d3d3d' : '#E8F6F8' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#E8F6F8' }}>
                 <Calendar className="w-5 h-5" style={{ color: '#4FB3C5' }} />
               </div>
             </div>
-            <p className="text-2xl font-bold text-center mb-1" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+            <p className="text-2xl font-bold text-center mb-1" style={{ color: '#252423' }}>
               {totalEntries}
             </p>
-            <p className="text-xs text-center" style={{ color: isDark ? '#999' : '#A8C9C7' }}>
+            <p className="text-xs text-center" style={{ color: '#616161' }}>
               Logs Total
             </p>
           </motion.div>
 
           <motion.div
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="rounded-2xl p-4 shadow-sm"
-            style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
+            className="rounded-md p-4 border"
+            style={{ backgroundColor: '#fff', borderColor: '#e0e0e0' }}
           >
             <div className="flex justify-center mb-2">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: isDark ? '#3d3d3d' : '#FFF5E1' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#FFF5E1' }}>
                 <TrendingUp className="w-5 h-5" style={{ color: '#FFB84D' }} />
               </div>
             </div>
-            <p className="text-2xl text-center mb-1" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+            <p className="text-2xl text-center mb-1" style={{ color: '#252423' }}>
               {moodEmoji}
             </p>
-            <p className="text-xs text-center" style={{ color: isDark ? '#999' : '#A8C9C7' }}>
+            <p className="text-xs text-center" style={{ color: '#616161' }}>
               This Week
             </p>
           </motion.div>
         </div>
 
-        {/* Main Check-in Card */}
+        {/* Main Check-in Card - Teams Style */}
         <motion.div 
-          className="rounded-3xl p-6 shadow-md mb-4"
-          style={{
-            background: isDark 
-              ? 'linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)'
-              : 'linear-gradient(135deg, white 0%, #F5FBFC 100%)'
-          }}
-          whileHover={{ scale: 1.01 }}
+          className="rounded-md p-6 border mb-6"
+          style={{ backgroundColor: '#fff', borderColor: '#e0e0e0' }}
+          whileHover={{ y: -2 }}
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Heart className="w-5 h-5" style={{ color: '#FF6B6B' }} />
-              <h2 className="text-lg font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+              <Heart className="w-5 h-5" style={{ color: '#6264a7' }} />
+              <h2 className="text-lg font-semibold" style={{ color: '#252423' }}>
                 How are you feeling?
               </h2>
             </div>
           </div>
 
-          <p className="text-sm mb-6" style={{ color: isDark ? '#4FB3C5' : '#4FB3C5' }}>
+          <p className="text-sm mb-6" style={{ color: '#616161' }}>
             {motivationalQuote}
           </p>
 
@@ -170,50 +163,50 @@ export function MobileHome({
           </Button>
         </motion.div>
 
-        {/* Today's Insight Card */}
+        {/* Today's Insight Card - Teams Style */}
         <motion.div 
-          className="rounded-3xl p-5 shadow-sm mb-4"
-          style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
+          className="rounded-md p-5 border mb-6"
+          style={{ backgroundColor: '#fff', borderColor: '#e0e0e0' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: isDark ? '#3d3d3d' : '#E8F6F8' }}>
-              <Sparkles className="w-4 h-4" style={{ color: '#4FB3C5' }} />
+            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#E8F6F8' }}>
+              <Sparkles className="w-4 h-4" style={{ color: '#6264a7' }} />
             </div>
-            <h3 className="text-base font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+            <h3 className="text-base font-semibold" style={{ color: '#252423' }}>
               Today's Insight
             </h3>
           </div>
-          <p className="text-sm mb-3" style={{ color: isDark ? '#ccc' : '#4A7B78' }}>
+          <p className="text-sm mb-3" style={{ color: '#616161' }}>
             {todaySuggestion}
           </p>
         </motion.div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions - Teams Style */}
         <div className="space-y-3">
           <motion.button
             onClick={onViewSocial}
-            className="w-full flex items-center justify-between p-4 rounded-2xl transition-all active:scale-98"
-            style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
-            whileHover={{ scale: 1.01 }}
+            className="w-full flex items-center justify-between p-4 rounded-md border transition-all active:scale-98"
+            style={{ backgroundColor: '#fff', borderColor: '#e0e0e0' }}
+            whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: isDark ? '#3d3d5d' : '#F3E8FF' }}>
-                <Heart className="w-5 h-5" style={{ color: '#9B7FD8' }} />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#F3E8FF' }}>
+                <Heart className="w-5 h-5" style={{ color: '#6264a7' }} />
               </div>
               <div className="text-left">
-                <p className="text-sm font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
+                <p className="text-sm font-semibold" style={{ color: '#252423' }}>
                   Community Board
                 </p>
-                <p className="text-xs" style={{ color: isDark ? '#999' : '#A8C9C7' }}>
+                <p className="text-xs" style={{ color: '#616161' }}>
                   See what others are feeling
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5" style={{ color: isDark ? '#666' : '#A8C9C7' }} />
+            <ChevronRight className="w-5 h-5" style={{ color: '#616161' }} />
           </motion.button>
         </div>
         </div>

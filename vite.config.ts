@@ -5,7 +5,7 @@
   import { visualizer } from 'rollup-plugin-visualizer';
 
   export default defineConfig({
-    base: '/', // Changed from '/A-R-Moodsync/' for custom domain
+    base: process.env.NODE_ENV === 'production' ? '/A-R-Moodsync/' : '/',
     plugins: [
       react(),
       ...(process.env.ANALYZE ? [visualizer({ filename: 'build/stats.html', gzipSize: true, brotliSize: true })] : [])

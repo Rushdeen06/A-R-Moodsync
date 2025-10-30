@@ -56,34 +56,34 @@ export function MobileHome({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen p-4 lg:p-8"
-      style={{ backgroundColor: isDark ? '#1a1a1a' : '#E8F6F8' }}
+      className="min-h-screen"
+      style={{ backgroundColor: '#fafafa' }}
     >
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <p className="text-sm" style={{ color: '#4FB3C5' }}>{greeting}</p>
-            <h1 className="text-2xl font-semibold" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
-              {userName}
+      {/* Teams-style Header Bar */}
+      <div className="sticky top-0 z-30 px-4 lg:px-8 py-3" style={{ backgroundColor: '#fff', borderBottom: '1px solid #e0e0e0' }}>
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-xl font-semibold" style={{ color: '#252423' }}>
+              Home
             </h1>
           </div>
-          <button 
-            onClick={onMenuClick} 
-            className="p-2.5 rounded-full transition-all active:scale-95"
-            style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
-          >
-            <Menu className="w-5 h-5" style={{ color: isDark ? '#4FB3C5' : '#2D7A8B' }} />
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="text-sm" style={{ color: '#616161' }}>{greeting}, {userName}</span>
+          </div>
         </div>
+      </div>
 
-        {/* Quick Stats Cards */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
+      {/* Main Content */}
+      <div className="p-4 lg:p-8">
+        <div className="max-w-6xl mx-auto">
+
+        {/* Quick Stats Cards - Teams Style */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
           <motion.div
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="rounded-2xl p-4 shadow-sm"
-            style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
+            className="rounded-md p-4 border"
+            style={{ backgroundColor: '#fff', borderColor: '#e0e0e0' }}
           >
             <div className="flex justify-center mb-2">
               <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: isDark ? '#3d3d3d' : '#FFE6E6' }}>
@@ -215,6 +215,7 @@ export function MobileHome({
             </div>
             <ChevronRight className="w-5 h-5" style={{ color: isDark ? '#666' : '#A8C9C7' }} />
           </motion.button>
+        </div>
         </div>
       </div>
     </motion.div>

@@ -298,8 +298,8 @@ export default function App() {
         />
       )}
 
-      {/* Main Content Area with responsive margins */}
-      <div className={showSideNav ? 'lg:ml-[240px] transition-all duration-300' : ''}>
+      {/* Main Content Area with responsive margins - Teams Style */}
+      <div className={showSideNav ? 'lg:ml-[280px] transition-all duration-300' : ''} style={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
         {currentScreen === 'home' && (
         <>
           <MobileHome

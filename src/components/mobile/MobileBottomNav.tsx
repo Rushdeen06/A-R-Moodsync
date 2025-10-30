@@ -7,12 +7,12 @@ interface MobileBottomNavProps {
 }
 
 const NAV_ITEMS = [
-  { id: 'dashboard', icon: Home, label: 'Dashboard' },
+  { id: 'home', icon: Home, label: 'Home' },
+  { id: 'social', icon: Calendar, label: 'Social' },
   { id: 'analytics', icon: TrendingUp, label: 'Analytics' },
-  { id: 'history', icon: Calendar, label: 'History' },
   { id: 'insights', icon: Brain, label: 'Insights' },
-  { id: 'social', icon: Users, label: 'Social' },
   { id: 'profile', icon: User, label: 'Profile' },
+  { id: 'admin', icon: Users, label: 'Admin' }, // TEMPORARY: For testing only - remove before production
 ];
 
 export function MobileBottomNav({ currentScreen, onNavigate }: MobileBottomNavProps) {

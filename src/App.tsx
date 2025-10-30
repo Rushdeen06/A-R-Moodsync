@@ -4,15 +4,16 @@ const MobileLoginScreen = lazy(() => import('./components/mobile/MobileLoginScre
 const MobileOnboarding = lazy(() => import('./components/mobile/MobileOnboarding').then(m => ({ default: m.MobileOnboarding })));
 const MobileProfile = lazy(() => import('./components/mobile/MobileProfile').then(m => ({ default: m.MobileProfile })));
 const MobileAnalytics = lazy(() => import('./components/mobile/MobileAnalytics').then(m => ({ default: m.MobileAnalytics })));
-const MobileHistory = lazy(() => import('./components/mobile/MobileHistory').then(m => ({ default: m.MobileHistory })));
+const MobileSocialBoard = lazy(() => import('./components/mobile/MobileSocialBoard').then(m => ({ default: m.MobileSocialBoard })));
 const InsightsHub = lazy(() => import('./components/mobile/InsightsHub').then(m => ({ default: m.InsightsHub })));
 const MobileBreathing = lazy(() => import('./components/mobile/MobileBreathing').then(m => ({ default: m.MobileBreathing })));
-const MobileSocialBoard = lazy(() => import('./components/mobile/MobileSocialBoard').then(m => ({ default: m.MobileSocialBoard })));
-import { UnifiedDashboard } from './components/mobile/UnifiedDashboard';
+const MobileAISuggestions = lazy(() => import('./components/mobile/MobileAISuggestions').then(m => ({ default: m.MobileAISuggestions })));
+const AdminDashboard = lazy(() => import('./components/workplace/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+import { MobileHome } from './components/mobile/MobileHome';
 // Keep lightweight, frequently visible UI components eagerly loaded
-// Simplified navigation: only dashboard & profile; remove floating action
-import { MobileBottomNav } from './components/mobile/MobileBottomNav';
+import { SideNav } from './components/SideNav';
 import { InstallPrompt } from './components/InstallPrompt';
+import { MoodTracker } from './components/MoodTracker';
 import { Loader2 } from 'lucide-react';
 import { Toaster, toast } from './components/ui/sonner';
 import { api } from './utils/api';
@@ -33,7 +34,7 @@ interface MoodEntry {
   category?: string;
 }
 
-type Screen = 'dashboard' | 'analytics' | 'history' | 'insights' | 'profile' | 'breathing' | 'social';
+type Screen = 'home' | 'ai-suggestions' | 'social' | 'analytics' | 'insights' | 'profile' | 'breathing' | 'admin';
 
 export default function App() {
   // Apply theme from localStorage on mount
@@ -52,10 +53,11 @@ export default function App() {
   }, []);
   const [user, setUser] = useState(null as User | null);
   const [entries, setEntries] = useState([] as MoodEntry[]);
-  const [currentScreen, setCurrentScreen] = useState('dashboard' as Screen);
+  const [currentScreen, setCurrentScreen] = useState('home' as Screen);
   const [isLoadingData, setIsLoadingData] = useState(false);
-  // Latest mood state removed in simplified version
+  const [latestMood, setLatestMood] = useState<{ mood: string; intensity: number } | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showMoodLogger, setShowMoodLogger] = useState(false);
 
   // Calculate streak with memoization
   const currentStreak = useMemo(() => {
@@ -217,7 +219,11 @@ export default function App() {
         timestamp: new Date(entry.timestamp),
       };
       setEntries([...entries, newEntry]);
+      setLatestMood({ mood, intensity });
       toast.success('Mood logged! 🎉');
+      
+      // Redirect to AI Suggestions after logging mood
+      setCurrentScreen('ai-suggestions');
     } catch (error) {
       console.error('Failed to create mood entry:', error);
       toast.error('Failed to save mood entry');
@@ -261,8 +267,8 @@ export default function App() {
     );
   }
 
-  const mainScreens = ['dashboard', 'analytics', 'history', 'insights', 'profile', 'social'];
-  const showBottomNav = mainScreens.includes(currentScreen);
+  const mainScreens = ['home', 'analytics', 'social', 'insights', 'profile', 'admin'];
+  const showSideNav = mainScreens.includes(currentScreen);
 
   const LoadingFallback = () => (
     <div className="flex items-center justify-center py-12">
@@ -270,29 +276,98 @@ export default function App() {
     </div>
   );
 
+  const weekMoodAverage = useMemo(() => {
+    const last7Days = entries.filter(e => {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return e.timestamp >= weekAgo;
+    });
+    if (last7Days.length === 0) return 3;
+    return last7Days.reduce((sum, e) => sum + e.intensity, 0) / last7Days.length;
+  }, [entries]);
+
   return (
     <>
       <Toaster />
       
-      {currentScreen === 'dashboard' && (
-        <UnifiedDashboard
-          entries={entries}
-          onSubmitMood={handleMoodSubmit}
-          currentStreak={currentStreak}
-          userName={user!.name}
-          onNavigate={(screen) => setCurrentScreen(screen as Screen)}
+      {/* Side Navigation */}
+      {showSideNav && (
+        <SideNav
+          currentScreen={currentScreen}
+          onNavigate={handleBottomNavNavigate}
         />
+      )}
+
+      {/* Main Content Area with responsive margins */}
+      <div className={showSideNav ? 'lg:ml-[240px] transition-all duration-300' : ''}>
+        {currentScreen === 'home' && (
+        <>
+          <MobileHome
+            userName={user!.name}
+            todaySuggestion="Take regular breaks to maintain your wellbeing"
+            onLogMood={() => setShowMoodLogger(true)}
+            onViewSocial={() => setCurrentScreen('social')}
+            onMenuClick={() => setCurrentScreen('profile')}
+            totalEntries={entries.length}
+            currentStreak={currentStreak}
+            weekMoodAverage={weekMoodAverage}
+          />
+          {showMoodLogger && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+                <MoodTracker
+                  onAddEntry={async (mood, note) => {
+                    await handleMoodSubmit(mood, note);
+                    setShowMoodLogger(false);
+                  }}
+                />
+                <button
+                  onClick={() => setShowMoodLogger(false)}
+                  className="w-full p-4 text-gray-600 hover:text-gray-900 font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {currentScreen === 'ai-suggestions' && latestMood && (
+        <Suspense fallback={<LoadingFallback />}>
+          <MobileAISuggestions
+            latestMood={latestMood.mood}
+            moodLevel={latestMood.intensity}
+            onAccept={(suggestion) => {
+              toast.success(`Great choice! ${suggestion}`);
+              setCurrentScreen('home');
+            }}
+            onSkip={() => setCurrentScreen('home')}
+            onFindBuddy={() => setCurrentScreen('social')}
+            onBack={() => setCurrentScreen('home')}
+          />
+        </Suspense>
+      )}
+
+      {currentScreen === 'social' && (
+        <Suspense fallback={<LoadingFallback />}>
+          <MobileSocialBoard
+            entries={entries.map(e => ({
+              id: e.id,
+              userName: user?.name || 'Anonymous',
+              mood: e.mood,
+              note: e.note,
+              timestamp: e.timestamp,
+              category: e.category
+            }))}
+            onBack={() => setCurrentScreen('home')}
+          />
+        </Suspense>
       )}
 
       {currentScreen === 'analytics' && (
         <Suspense fallback={<LoadingFallback />}>
           <MobileAnalytics entries={entries} />
-        </Suspense>
-      )}
-
-      {currentScreen === 'history' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileHistory entries={entries} />
         </Suspense>
       )}
 
@@ -314,35 +389,21 @@ export default function App() {
         </Suspense>
       )}
 
-      {currentScreen === 'breathing' && (
+      {currentScreen === 'admin' && (
         <Suspense fallback={<LoadingFallback />}>
-          <MobileBreathing onComplete={() => setCurrentScreen('dashboard')} />
-        </Suspense>
-      )}
-
-      {currentScreen === 'social' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileSocialBoard 
-            entries={entries.map(entry => ({
-              id: entry.id,
-              userName: user!.name,
-              mood: entry.mood,
-              note: entry.note,
-              timestamp: entry.timestamp,
-              category: entry.category,
-            }))}
-            onBack={() => setCurrentScreen('dashboard')}
+          <AdminDashboard
+            entries={entries}
+            onBack={() => setCurrentScreen('home')}
           />
         </Suspense>
       )}
 
-      {/* Bottom Navigation */}
-      {showBottomNav && (
-        <MobileBottomNav
-          currentScreen={currentScreen}
-          onNavigate={handleBottomNavNavigate}
-        />
-      )}
+        {currentScreen === 'breathing' && (
+          <Suspense fallback={<LoadingFallback />}>
+            <MobileBreathing onComplete={() => setCurrentScreen('home')} />
+          </Suspense>
+        )}
+      </div>
 
       {/* Install Prompt */}
       <InstallPrompt />

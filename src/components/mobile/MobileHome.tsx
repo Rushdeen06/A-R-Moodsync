@@ -56,10 +56,10 @@ export function MobileHome({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen p-4 pb-24"
+      className="min-h-screen p-4 lg:p-8"
       style={{ backgroundColor: isDark ? '#1a1a1a' : '#E8F6F8' }}
     >
-      <div className="max-w-md mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>

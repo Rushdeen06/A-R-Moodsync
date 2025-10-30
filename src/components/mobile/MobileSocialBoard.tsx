@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, MessageCircle, Heart, TrendingUp, Users, Filter, X, Send, Smile } from 'lucide-react';
 import { Badge } from '../ui/badge';
@@ -20,6 +20,8 @@ const MOOD_EMOJIS: Record<string, string> = {
   'very-low': '😢',
 };
 
+interface LocalPost { id: string; userName: string; mood: string; note: string; timestamp: Date; category?: string }
+
 export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
   const isDark = false; // static light theme
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -30,9 +32,30 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'popular'>('recent');
 
+  // Local posts persistence
+  const [localPosts, setLocalPosts] = useState<LocalPost[]>([]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('moodsync_local_posts');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setLocalPosts(parsed.map((p: any) => ({ ...p, timestamp: new Date(p.timestamp) })));
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  const allEntries: LocalPost[] = [...localPosts, ...entries.map(e => ({
+    id: e.id,
+    userName: e.userName || 'User',
+    mood: e.mood,
+    note: e.note,
+    timestamp: e.timestamp,
+    category: e.category
+  }))];
+
   const filteredEntries = selectedCategory
-    ? entries.filter(e => e.category === selectedCategory)
-    : entries;
+    ? allEntries.filter(e => e.category === selectedCategory)
+    : allEntries;
 
   // Sort entries
   const sortedEntries = [...filteredEntries].sort((a, b) => {
@@ -88,6 +111,34 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
       'very-low': '#FF6B9D',
     };
     return colors[mood] || '#4FB3C5';
+  };
+
+  // Composer state
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [composerMood, setComposerMood] = useState<string>('');
+  const [composerText, setComposerText] = useState('');
+  const [composerCategory, setComposerCategory] = useState<string>('General');
+
+  const MOODS = ['great','good','okay','low','very-low'];
+
+  const handlePost = () => {
+    if (!composerMood || !composerText.trim()) { return toast('Add mood & message'); }
+    const userName = (localStorage.getItem('moodsync_user') && JSON.parse(localStorage.getItem('moodsync_user')||'{}')?.name) || 'You';
+    const newPost: LocalPost = {
+      id: 'local-' + Date.now(),
+      userName,
+      mood: composerMood,
+      note: composerText,
+      timestamp: new Date(),
+      category: composerCategory
+    };
+    const updated = [newPost, ...localPosts];
+    setLocalPosts(updated);
+    localStorage.setItem('moodsync_local_posts', JSON.stringify(updated));
+    setComposerOpen(false);
+    setComposerMood('');
+    setComposerText('');
+    toast.success('Post shared!');
   };
 
   return (
@@ -225,6 +276,77 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                 </div>
               </div>
             </motion.div>
+          )}
+        </div>
+
+        {/* Composer */}
+        <div className="px-4 mb-4">
+          {!composerOpen && (
+            <button
+              onClick={() => setComposerOpen(true)}
+              className="w-full rounded-2xl p-4 text-left shadow-sm flex items-center gap-3"
+              style={{ backgroundColor: isDark ? '#2d2d2d' : 'white', color: isDark ? '#fff' : '#2D7A8B' }}
+              data-testid="open-composer"
+            >
+              <Smile className="w-5 h-5" style={{ color: '#4FB3C5' }} />
+              <span className="text-sm opacity-80">Share how you're feeling...</span>
+            </button>
+          )}
+          {composerOpen && (
+            <div className="rounded-2xl p-4 shadow-sm" style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}>
+              <div className="flex gap-2 mb-3 flex-wrap">
+                {MOODS.map(m => (
+                  <button
+                    key={m}
+                    onClick={() => setComposerMood(m)}
+                    className="px-3 py-1 rounded-full text-xs"
+                    style={{
+                      backgroundColor: composerMood === m ? '#4FB3C5' : (isDark ? '#3d3d3d' : '#E8F6F8'),
+                      color: composerMood === m ? 'white' : (isDark ? '#ccc' : '#2D7A8B')
+                    }}
+                    data-testid={`composer-mood-${m}`}
+                  >
+                    {MOOD_EMOJIS[m] || '😐'} {m}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                value={composerText}
+                onChange={(e) => setComposerText(e.target.value)}
+                placeholder="What's on your mind?"
+                className="w-full text-sm rounded-xl p-3 mb-3 outline-none"
+                style={{ backgroundColor: isDark ? '#3d3d3d' : '#F5F8FA', color: isDark ? '#fff' : '#2D7A8B' }}
+                rows={3}
+                data-testid="composer-text"
+              />
+              <div className="flex justify-between items-center mb-3">
+                <select
+                  value={composerCategory}
+                  onChange={(e) => setComposerCategory(e.target.value)}
+                  className="text-xs rounded-full px-3 py-1"
+                  style={{ backgroundColor: isDark ? '#3d3d3d' : '#E8F6F8', color: isDark ? '#fff' : '#2D7A8B' }}
+                  data-testid="composer-category"
+                >
+                  <option>General</option>
+                  {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                </select>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { setComposerOpen(false); setComposerMood(''); setComposerText(''); }}
+                    className="text-xs px-3 py-2 rounded-full"
+                    style={{ backgroundColor: isDark ? '#3d3d3d' : '#E8F6F8', color: isDark ? '#ccc' : '#2D7A8B' }}
+                    data-testid="composer-cancel"
+                  >Cancel</button>
+                  <button
+                    onClick={handlePost}
+                    disabled={!composerMood || !composerText.trim()}
+                    className="text-xs px-3 py-2 rounded-full"
+                    style={{ backgroundColor: (!composerMood || !composerText.trim()) ? '#A8C9C7' : '#4FB3C5', color: 'white' }}
+                    data-testid="composer-submit"
+                  >Share</button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 

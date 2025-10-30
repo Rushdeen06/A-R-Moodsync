@@ -4,7 +4,6 @@ import App from "./App.tsx";
 import { ErrorBoundary } from './components/ErrorBoundary';
 import "./index.css";
 import "./theme.css";
-import { ThemeProvider } from './utils/ThemeProvider';
 import './styles/theme.css';
 
 // Log environment info for debugging deployed static GitHub Pages vs local
@@ -39,9 +38,7 @@ if ('serviceWorker' in navigator) {
 }
 
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </ThemeProvider>
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
 );  

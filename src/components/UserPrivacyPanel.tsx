@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { api } from '../utils/api';
-import { useTheme } from '../utils/ThemeProvider';
 
 interface User {
   name: string;
@@ -13,8 +12,6 @@ export function UserPrivacyPanel() {
   const [user, setUser] = useState<User | null>(null);
   const [publicView, setPublicView] = useState(true);
   const [loading, setLoading] = useState(false);
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
 
   const API_ROOT = 'http://localhost:4000';
   const isStaticGithub = typeof window !== 'undefined' && /github\.io$/.test(window.location.hostname);
@@ -84,17 +81,17 @@ export function UserPrivacyPanel() {
     <div className="mt-4">
       <div 
         className="rounded-xl p-4 mb-4"
-        style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
+        style={{ backgroundColor: 'white' }}
       >
-        <h4 className="text-sm font-semibold" style={{ color: isDark ? '#4FB3C5' : '#2D7A8B' }}>Profile preview</h4>
+        <h4 className="text-sm font-semibold" style={{ color: '#2D7A8B' }}>Profile preview</h4>
         {loading && <p className="text-xs" style={{ color: '#4FB3C5' }}>Loading...</p>}
 
         {!loading && user && (
           <div className="mt-2">
-            <p className="text-sm" style={{ color: isDark ? '#fff' : '#2D7A8B' }}><strong>Name:</strong> {user.name ?? '—'}</p>
-            <p className="text-sm" style={{ color: isDark ? '#fff' : '#2D7A8B' }}><strong>Email:</strong> {user.email ?? '—'}</p>
-            <p className="text-sm" style={{ color: isDark ? '#fff' : '#2D7A8B' }}><strong>Bio:</strong> {user.bio ?? '—'}</p>
-            <p className="text-xs mt-2" style={{ color: isDark ? '#999' : '#4FB3C5' }}>{publicView ? 'This is the public (masked) view when sharing a link.' : 'You are viewing full data (owner).'}</p>
+            <p className="text-sm" style={{ color: '#2D7A8B' }}><strong>Name:</strong> {user.name ?? '—'}</p>
+            <p className="text-sm" style={{ color: '#2D7A8B' }}><strong>Email:</strong> {user.email ?? '—'}</p>
+            <p className="text-sm" style={{ color: '#2D7A8B' }}><strong>Bio:</strong> {user.bio ?? '—'}</p>
+            <p className="text-xs mt-2" style={{ color: '#4FB3C5' }}>{publicView ? 'This is the public (masked) view when sharing a link.' : 'You are viewing full data (owner).'}</p>
           </div>
         )}
 
@@ -105,10 +102,10 @@ export function UserPrivacyPanel() {
 
       <div 
         className="rounded-xl p-4"
-        style={{ backgroundColor: isDark ? '#2d2d2d' : 'white' }}
+        style={{ backgroundColor: 'white' }}
       >
-        <h4 className="text-sm mb-2 font-semibold" style={{ color: isDark ? '#4FB3C5' : '#2D7A8B' }}>Developer access</h4>
-        <p className="text-xs" style={{ color: isDark ? '#999' : '#4FB3C5' }}>
+        <h4 className="text-sm mb-2 font-semibold" style={{ color: '#2D7A8B' }}>Developer access</h4>
+        <p className="text-xs" style={{ color: '#4FB3C5' }}>
           Full data will appear here if you sign in through the app (Supabase auth). This component no longer exposes a dev login form.
         </p>
       </div>

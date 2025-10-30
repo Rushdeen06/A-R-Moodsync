@@ -1,15 +1,13 @@
 import { Switch } from './ui/switch';
-import { useTheme } from '../utils/ThemeProvider';
 
 export function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === 'dark';
-
+  // Theme toggle disabled - app uses static light theme
   return (
     <Switch
-      checked={isDark}
-      onCheckedChange={toggleTheme}
+      checked={false}
+      onCheckedChange={() => {}}
       aria-label="Toggle dark mode"
+      disabled
     />
   );
 }

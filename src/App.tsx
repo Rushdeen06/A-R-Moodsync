@@ -31,6 +31,7 @@ interface MoodEntry {
   timestamp: Date;
   intensity: number;
   category?: string;
+  userName?: string; // added to unify with MobileSocialBoardEntry shape
 }
 
 type Screen = 'dashboard' | 'analytics' | 'history' | 'insights' | 'profile' | 'breathing' | 'social';

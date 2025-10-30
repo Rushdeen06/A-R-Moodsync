@@ -9,7 +9,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface SideNavProps {
   currentScreen: string;
@@ -32,6 +32,17 @@ const ADMIN_ITEMS = [
 export function SideNav({ currentScreen, onNavigate, userRole }: SideNavProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 1024);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const showAdminTab = userRole === 'hr' || userRole === 'admin' || true; // TODO: Remove "|| true" in production
 
@@ -65,7 +76,7 @@ export function SideNav({ currentScreen, onNavigate, userRole }: SideNavProps) {
         initial={false}
         animate={{
           width: isCollapsed ? 72 : 240,
-          x: isMobileMenuOpen || window.innerWidth >= 1024 ? 0 : -240,
+          x: isMobileMenuOpen || isDesktop ? 0 : -240,
         }}
         className={`fixed left-0 top-0 h-full z-40 bg-gradient-to-b from-[#2D7A8B] to-[#1a5f6f] text-white shadow-xl ${
           isMobileMenuOpen ? 'block' : 'hidden lg:block'

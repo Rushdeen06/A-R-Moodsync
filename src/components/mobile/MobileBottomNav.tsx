@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Home, TrendingUp, Calendar, User, Brain } from 'lucide-react';
+import { Home, TrendingUp, Calendar, User, Brain, Users } from 'lucide-react';
 
 interface MobileBottomNavProps {
   currentScreen: string;
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { id: 'analytics', icon: TrendingUp, label: 'Analytics' },
   { id: 'history', icon: Calendar, label: 'History' },
   { id: 'insights', icon: Brain, label: 'Insights' },
+  { id: 'social', icon: Users, label: 'Social' },
   { id: 'profile', icon: User, label: 'Profile' },
 ];
 
@@ -26,7 +27,7 @@ export function MobileBottomNav({ currentScreen, onNavigate }: MobileBottomNavPr
         boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.05)' 
       }}
     >
-  <div className="grid grid-cols-5 h-16">
+  <div className="grid grid-cols-6 h-16">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = currentScreen === item.id;

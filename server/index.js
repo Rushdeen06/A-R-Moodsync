@@ -2,8 +2,18 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const pino = require('pino');
+const pinoHttp = require('pino-http');
+// Metrics (stub – implement prom-client later)
+let requestCount = 0;
+const startTime = Date.now();
 
 const app = express();
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+app.use(pinoHttp({ logger }));
 
 // Global error handlers for uncaught errors
 process.on('uncaughtException', (error) => {
@@ -34,8 +44,25 @@ process.on('SIGINT', () => {
   });
 });
 
-app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:3000' }));
-app.use(express.json());
+// Security & performance middlewares
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
+app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:3000', credentials: true }));
+app.use(compression());
+app.use(express.json({ limit: '1mb' }));
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300, // 300 requests per 15 min per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+}));
+
+// Simple request counter (replace with prom-client)
+app.use((req, res, next) => {
+  requestCount++;
+  next();
+});
 
 // Serve static files from the React build folder
 app.use(express.static(path.join(__dirname, '../build')));
@@ -208,7 +235,26 @@ app.post('/api/auth/signin', asyncHandler(async (req, res) => {
   }
 }));
 
-app.get('/health', (req, res) => res.send('ok'));
+// Health endpoints
+app.get('/health/live', (req, res) => res.status(200).send('live'));
+app.get('/health/ready', (req, res) => {
+  // In future: check DB, cache, queue connectivity
+  res.status(200).json({ ready: true });
+});
+
+// Basic metrics endpoint (prometheus format placeholder)
+app.get('/metrics', (req, res) => {
+  const uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
+  res.set('Content-Type', 'text/plain');
+  res.send(
+    `# HELP app_request_count Total requests since start\n` +
+    `# TYPE app_request_count counter\n` +
+    `app_request_count ${requestCount}\n` +
+    `# HELP app_uptime_seconds Uptime in seconds\n` +
+    `# TYPE app_uptime_seconds gauge\n` +
+    `app_uptime_seconds ${uptimeSeconds}\n`
+  );
+});
 
 // Simple in-memory store for dev moods and settings
 const moodEntries = [];
@@ -266,8 +312,7 @@ app.use((req, res, next) => {
 
 // Global error handling middleware - must be last
 app.use((err, req, res, next) => {
-  console.error('❌ Express Error Handler:', err);
-  console.error('Stack:', err.stack);
+  logger.error({ err }, 'Express Error Handler');
   
   // Don't leak error details in production
   const errorResponse = {
@@ -282,18 +327,16 @@ app.use((err, req, res, next) => {
 let server;
 try {
   server = app.listen(PORT, () => {
-    console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`⏰ Started at: ${new Date().toLocaleString()}\n`);
+    logger.info({ port: PORT, env: process.env.NODE_ENV }, 'Server started');
   });
 
   // Handle server errors
   server.on('error', (error) => {
     if (error.code === 'EADDRINUSE') {
-      console.error(`❌ Port ${PORT} is already in use. Please stop the other process or use a different port.`);
+      logger.error({ port: PORT }, 'Port in use');
       process.exit(1);
     } else {
-      console.error('❌ Server error:', error);
+      logger.error({ err: error }, 'Server error');
     }
   });
 

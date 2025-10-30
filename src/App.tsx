@@ -7,6 +7,7 @@ const MobileAnalytics = lazy(() => import('./components/mobile/MobileAnalytics')
 const MobileHistory = lazy(() => import('./components/mobile/MobileHistory').then(m => ({ default: m.MobileHistory })));
 const InsightsHub = lazy(() => import('./components/mobile/InsightsHub').then(m => ({ default: m.InsightsHub })));
 const MobileBreathing = lazy(() => import('./components/mobile/MobileBreathing').then(m => ({ default: m.MobileBreathing })));
+const MobileSocialBoard = lazy(() => import('./components/mobile/MobileSocialBoard').then(m => ({ default: m.MobileSocialBoard })));
 import { UnifiedDashboard } from './components/mobile/UnifiedDashboard';
 // Keep lightweight, frequently visible UI components eagerly loaded
 // Simplified navigation: only dashboard & profile; remove floating action
@@ -32,7 +33,7 @@ interface MoodEntry {
   category?: string;
 }
 
-type Screen = 'dashboard' | 'analytics' | 'history' | 'insights' | 'profile' | 'breathing';
+type Screen = 'dashboard' | 'analytics' | 'history' | 'insights' | 'profile' | 'breathing' | 'social';
 
 export default function App() {
   // Apply theme from localStorage on mount
@@ -260,7 +261,7 @@ export default function App() {
     );
   }
 
-  const mainScreens = ['dashboard', 'analytics', 'history', 'insights', 'profile'];
+  const mainScreens = ['dashboard', 'analytics', 'history', 'insights', 'profile', 'social'];
   const showBottomNav = mainScreens.includes(currentScreen);
 
   const LoadingFallback = () => (
@@ -316,6 +317,22 @@ export default function App() {
       {currentScreen === 'breathing' && (
         <Suspense fallback={<LoadingFallback />}>
           <MobileBreathing onComplete={() => setCurrentScreen('dashboard')} />
+        </Suspense>
+      )}
+
+      {currentScreen === 'social' && (
+        <Suspense fallback={<LoadingFallback />}>
+          <MobileSocialBoard 
+            entries={entries.map(entry => ({
+              id: entry.id,
+              userName: user!.name,
+              mood: entry.mood,
+              note: entry.note,
+              timestamp: entry.timestamp,
+              category: entry.category,
+            }))}
+            onBack={() => setCurrentScreen('dashboard')}
+          />
         </Suspense>
       )}
 

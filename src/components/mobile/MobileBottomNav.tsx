@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { id: 'social', icon: Calendar, label: 'Social' },
   { id: 'analytics', icon: TrendingUp, label: 'Analytics' },
   { id: 'insights', icon: Brain, label: 'Insights' },
+  { id: 'social', icon: Users, label: 'Social' },
   { id: 'profile', icon: User, label: 'Profile' },
   { id: 'admin', icon: Users, label: 'Admin' }, // TEMPORARY: For testing only - remove before production
 ];

@@ -83,3 +83,54 @@ Original design concept: https://www.figma.com/design/bsZS3oliXe8YSP5iLIkcmS/A-R
 ## License
 
 Internal prototype – licensing TBD.
+
+## 🔄 Updating the Live GitHub Pages Site
+
+You now have two ways to deploy updates:
+
+### 1. Automatic (Recommended)
+Push commits to the `main` branch. A GitHub Action (`.github/workflows/deploy.yml`) will:
+1. Install dependencies
+2. Build the production bundle (Vite)
+3. Copy `index.html` to `404.html` for SPA routing
+4. Publish the `build/` folder to GitHub Pages
+
+First time setup:
+1. Ensure your repository has a `main` branch (rename if currently `old-version`):
+  ```powershell
+  git branch -m old-version main
+  git push -u origin main
+  ```
+2. In GitHub: Repo → Settings → Pages → Source: GitHub Actions
+
+### 2. Manual (Fallback)
+Run the batch script:
+```powershell
+./deploy-github.bat
+```
+Or use the npm script (requires `gh-pages` dev dependency):
+```powershell
+npm run deploy
+```
+
+### Cache & Service Worker Notes
+The app uses hashed filenames for JS/CSS assets, so new builds automatically bust browser cache.
+If you re-enable the service worker (`public/service-worker.js`), increment `CACHE_NAME` and build again to force clients to update.
+
+### Troubleshooting Updates
+| Symptom | Fix |
+| ------- | --- |
+| Old UI after deploy | Hard refresh (Ctrl+F5) or clear site data; ensure Action succeeded |
+| 404 on deep link | Verify `404.html` exists in deployed artifact (workflow creates it) |
+| Blank screen | Check console for missing asset paths; confirm Vite `base` matches repo folder `/A-R-Moodsync/` |
+| Action failed | Actions tab → deployment workflow → logs; fix build errors locally |
+
+### Verifying Deployment Artifact Locally
+```powershell
+npm run build
+copy build\index.html build\404.html
+```
+Inspect `build/` folder; hashed chunks should match references in `index.html`.
+
+---
+Need help improving deployment (preview environments or SW version automation)? Open an issue or ask.

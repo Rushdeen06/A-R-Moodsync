@@ -3,17 +3,11 @@ import { motion } from 'motion/react';
 import { ArrowLeft, MessageCircle, Heart, TrendingUp, Users, Filter, X, Send, Smile } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { toast } from '../ui/sonner';
-import { useTheme } from '../../utils/ThemeProvider';
+// Theme removed – static light palette.
 
+import type { } from '../../App'; // ensure TS can link types if needed
 interface MobileSocialBoardProps {
-  entries: Array<{
-    id: string;
-    userName: string;
-    mood: string;
-    note: string;
-    timestamp: Date;
-    category?: string;
-  }>;
+  entries: Array<{ id: string; userName?: string; mood: string; note: string; timestamp: Date; category?: string }>;
   onBack: () => void;
 }
 
@@ -27,8 +21,7 @@ const MOOD_EMOJIS: Record<string, string> = {
 };
 
 export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const isDark = false; // static light theme
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [showComments, setShowComments] = useState<string | null>(null);
@@ -253,12 +246,12 @@ export function MobileSocialBoard({ entries, onBack }: MobileSocialBoardProps) {
                     className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0"
                     style={{ backgroundColor: getMoodColor(entry.mood) }}
                   >
-                    {entry.userName.charAt(0)}
+                    {(entry.userName || '?').charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
                       <p className="font-semibold truncate" style={{ color: isDark ? '#fff' : '#2D7A8B' }}>
-                        {entry.userName}
+                        {entry.userName || 'Anonymous'}
                       </p>
                       <span className="text-xs flex-shrink-0" style={{ color: '#4FB3C5' }}>
                         {getTimeAgo(entry.timestamp)}

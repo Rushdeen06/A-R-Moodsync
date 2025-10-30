@@ -1,42 +1,40 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import { visualizer } from 'rollup-plugin-visualizer';
 
-  import { defineConfig } from 'vite';
-  import react from '@vitejs/plugin-react-swc';
-  import path from 'path';
-  import { visualizer } from 'rollup-plugin-visualizer';
-
-  export default defineConfig({
-    base: process.env.NODE_ENV === 'production' ? '/A-R-Moodsync/' : '/',
-    plugins: [
-      react(),
-      ...(process.env.ANALYZE ? [visualizer({ filename: 'build/stats.html', gzipSize: true, brotliSize: true })] : [])
-    ],
-    publicDir: 'public', // Ensure CNAME file is copied
-    resolve: {
-      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
-      alias: {
-        // Keep only project root alias to minimize risk of duplicate module instances (React hooks error)
-        '@': path.resolve(__dirname, './src'),
-      },
+export default defineConfig({
+  base: process.env.NODE_ENV === 'production' ? '/A-R-Moodsync/' : '/',
+  plugins: [
+    react(),
+    ...(process.env.ANALYZE ? [visualizer({ filename: 'build/stats.html', gzipSize: true, brotliSize: true })] : [])
+  ],
+  publicDir: 'public',
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+    alias: {
+      '@': path.resolve(__dirname, './src'),
     },
-    build: {
-      target: 'esnext',
-      outDir: 'build',
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'react';
-              if (id.includes('framer-motion') || id.includes('motion')) return 'motion';
-              if (id.includes('@radix-ui')) return 'radix';
-              if (id.includes('lucide-react')) return 'icons';
-              if (id.includes('@supabase')) return 'supabase';
-            }
-          },
+  },
+  build: {
+    target: 'esnext',
+    outDir: 'build',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) return 'react';
+            if (id.includes('framer-motion') || id.includes('motion')) return 'motion';
+            if (id.includes('@radix-ui')) return 'radix';
+            if (id.includes('lucide-react')) return 'icons';
+            if (id.includes('@supabase')) return 'supabase';
+          }
         },
       },
     },
-    server: {
-      port: 3000,
-      open: true,
-    },
-  });
+  },
+  server: {
+    port: 3000,
+    open: true,
+  },
+});

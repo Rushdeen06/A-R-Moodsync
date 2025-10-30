@@ -36,7 +36,7 @@ if %ERRORLEVEL% EQU 0 (
     exit /b 1
 )
 
-echo [2/5] Building production version...
+echo [2/6] Building production version...
 call npm run build
 if errorlevel 1 (
     echo ERROR: Build failed!
@@ -45,7 +45,13 @@ if errorlevel 1 (
 )
 
 echo.
-echo [3/5] Checking Git repository...
+echo [3/6] Creating SPA 404 fallback...
+copy /Y build\index.html build\404.html >nul
+if errorlevel 1 (
+    echo WARNING: Could not copy 404 fallback
+)
+
+echo [4/6] Checking Git repository...
 if not exist .git (
     echo Initializing Git repository...
     git init
@@ -74,7 +80,7 @@ if not exist .git (
     exit /b 0
 )
 
-echo [4/5] Checking remote repository...
+echo [5/6] Checking remote repository...
 git remote -v | findstr origin >nul
 if %ERRORLEVEL% NEQ 0 (
     echo.
@@ -87,7 +93,7 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-echo [5/5] Deploying to GitHub Pages...
+echo [6/6] Deploying to GitHub Pages...
 call npm run deploy
 if errorlevel 1 (
     echo.

@@ -3,7 +3,7 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { BookOpen, Music, Users, Lightbulb, Activity, Coffee, Headphones } from 'lucide-react';
 import { motion } from 'motion/react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { ReminderSettings } from './ReminderSettings';
 
 interface MoodEntry {

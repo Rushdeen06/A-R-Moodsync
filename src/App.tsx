@@ -1,14 +1,16 @@
 import { useState, useEffect, Suspense, lazy, useMemo } from 'react';
-// Dynamic mobile screens (lazy loaded to keep initial bundle lean)
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { DashboardScreen } from './screens/DashboardScreen';
+import { AnalyticsScreen } from './screens/AnalyticsScreen';
+import { HistoryScreen } from './screens/HistoryScreen';
+import { InsightsScreen } from './screens/InsightsScreen';
+import { ProfileScreen } from './screens/ProfileScreen';
+import { SocialBoardScreen } from './screens/SocialBoardScreen';
+import { BreathingScreen } from './screens/BreathingScreen';
+import { TeamsLayout } from './components/TeamsLayout';
+// Lazy only login & onboarding
 const MobileLoginScreen = lazy(() => import('./components/mobile/MobileLoginScreen').then(m => ({ default: m.MobileLoginScreen })));
 const MobileOnboarding = lazy(() => import('./components/mobile/MobileOnboarding').then(m => ({ default: m.MobileOnboarding })));
-const MobileProfile = lazy(() => import('./components/mobile/MobileProfile').then(m => ({ default: m.MobileProfile })));
-const MobileAnalytics = lazy(() => import('./components/mobile/MobileAnalytics').then(m => ({ default: m.MobileAnalytics })));
-const MobileHistory = lazy(() => import('./components/mobile/MobileHistory').then(m => ({ default: m.MobileHistory })));
-const InsightsHub = lazy(() => import('./components/mobile/InsightsHub').then(m => ({ default: m.InsightsHub })));
-const MobileBreathing = lazy(() => import('./components/mobile/MobileBreathing').then(m => ({ default: m.MobileBreathing })));
-const MobileSocialBoard = lazy(() => import('./components/mobile/MobileSocialBoard').then(m => ({ default: m.MobileSocialBoard })));
-import { UnifiedDashboard } from './components/mobile/UnifiedDashboard';
 // Keep lightweight, frequently visible UI components eagerly loaded
 // Simplified navigation: only dashboard & profile; remove floating action
 import { MobileBottomNav } from './components/mobile/MobileBottomNav';
@@ -34,9 +36,7 @@ interface MoodEntry {
   userName?: string; // added to unify with MobileSocialBoardEntry shape
 }
 
-type Screen = 'dashboard' | 'analytics' | 'history' | 'insights' | 'profile' | 'breathing' | 'social';
-
-export default function App() {
+function AppInner() {
   // Apply theme from localStorage on mount
   useEffect(() => {
     try {
@@ -53,7 +53,8 @@ export default function App() {
   }, []);
   const [user, setUser] = useState(null as User | null);
   const [entries, setEntries] = useState([] as MoodEntry[]);
-  const [currentScreen, setCurrentScreen] = useState('dashboard' as Screen);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isLoadingData, setIsLoadingData] = useState(false);
   // Latest mood state removed in simplified version
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -198,7 +199,7 @@ export default function App() {
   };
 
   const handleBottomNavNavigate = (screen: string) => {
-    setCurrentScreen(screen as Screen);
+    navigate('/' + (screen === 'dashboard' ? '' : screen));
   };
 
   const handleMoodSubmit = async (mood: string, note: string) => {
@@ -262,84 +263,56 @@ export default function App() {
     );
   }
 
-  const mainScreens = ['dashboard', 'analytics', 'history', 'insights', 'profile', 'social'];
-  const showBottomNav = mainScreens.includes(currentScreen);
+  const path = location.pathname.replace(/^\//, '') || 'dashboard';
+  const mainScreens = ['dashboard','analytics','history','insights','profile','social'];
+  const showBottomNav = mainScreens.includes(path);
 
-  const LoadingFallback = () => (
-    <div className="flex items-center justify-center py-12">
-      <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-    </div>
-  );
 
   return (
     <>
       <Toaster />
-      
-      {currentScreen === 'dashboard' && (
-        <UnifiedDashboard
-          entries={entries}
-          onSubmitMood={handleMoodSubmit}
-          currentStreak={currentStreak}
-          userName={user!.name}
-          onNavigate={(screen) => setCurrentScreen(screen as Screen)}
-        />
-      )}
-
-      {currentScreen === 'analytics' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileAnalytics entries={entries} />
-        </Suspense>
-      )}
-
-      {currentScreen === 'history' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileHistory entries={entries} />
-        </Suspense>
-      )}
-
-      {currentScreen === 'insights' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <InsightsHub entries={entries} />
-        </Suspense>
-      )}
-
-      {currentScreen === 'profile' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileProfile
-            userName={user!.name}
-            userEmail={user!.email}
-            totalEntries={entries.length}
-            currentStreak={currentStreak}
-            onLogout={handleLogout}
-          />
-        </Suspense>
-      )}
-
-      {currentScreen === 'breathing' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileBreathing onComplete={() => setCurrentScreen('dashboard')} />
-        </Suspense>
-      )}
-
-      {currentScreen === 'social' && (
-        <Suspense fallback={<LoadingFallback />}>
-          <MobileSocialBoard
-            entries={entries}
-            onBack={() => setCurrentScreen('dashboard')}
-          />
-        </Suspense>
-      )}
-
-      {/* Bottom Navigation */}
-      {showBottomNav && (
-        <MobileBottomNav
-          currentScreen={currentScreen}
-          onNavigate={handleBottomNavNavigate}
-        />
-      )}
-
-      {/* Install Prompt */}
+      <div className="app-responsive-wrapper">
+        <div className="desktop-only">
+          <TeamsLayout userName={user!.name}>
+            <Routes>
+              <Route path="/" element={<DashboardScreen entries={entries} onSubmitMood={handleMoodSubmit} currentStreak={currentStreak} userName={user!.name} onNavigate={(s) => navigate('/' + (s==='dashboard'?'':s))} />} />
+              <Route path="/analytics" element={<AnalyticsScreen entries={entries} />} />
+              <Route path="/history" element={<HistoryScreen entries={entries} />} />
+              <Route path="/insights" element={<InsightsScreen entries={entries} />} />
+              <Route path="/profile" element={<ProfileScreen userName={user!.name} userEmail={user!.email} totalEntries={entries.length} currentStreak={currentStreak} onLogout={handleLogout} />} />
+              <Route path="/breathing" element={<BreathingScreen onComplete={() => navigate('/')} />} />
+              <Route path="/social" element={<SocialBoardScreen entries={entries} />} />
+            </Routes>
+          </TeamsLayout>
+        </div>
+        <div className="mobile-only">
+          <Routes>
+            <Route path="/" element={<DashboardScreen entries={entries} onSubmitMood={handleMoodSubmit} currentStreak={currentStreak} userName={user!.name} onNavigate={(s) => navigate('/' + (s==='dashboard'?'':s))} />} />
+            <Route path="/analytics" element={<AnalyticsScreen entries={entries} />} />
+            <Route path="/history" element={<HistoryScreen entries={entries} />} />
+            <Route path="/insights" element={<InsightsScreen entries={entries} />} />
+            <Route path="/profile" element={<ProfileScreen userName={user!.name} userEmail={user!.email} totalEntries={entries.length} currentStreak={currentStreak} onLogout={handleLogout} />} />
+            <Route path="/breathing" element={<BreathingScreen onComplete={() => navigate('/')} />} />
+            <Route path="/social" element={<SocialBoardScreen entries={entries} />} />
+          </Routes>
+          {showBottomNav && (
+            <MobileBottomNav
+              currentScreen={path}
+              onNavigate={handleBottomNavNavigate}
+            />
+          )}
+        </div>
+      </div>
       <InstallPrompt />
     </>
+  );
+}
+
+export default function App() {
+  const base = (import.meta as any).env?.BASE_URL || '/A-R-Moodsync/';
+  return (
+    <BrowserRouter basename={base}>
+      <AppInner />
+    </BrowserRouter>
   );
 }

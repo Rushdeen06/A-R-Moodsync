@@ -1,5 +1,5 @@
 // Service Worker (static demo aware) - versioned cache
-const CACHE_NAME = 'moodsync-v3';
+const CACHE_NAME = 'moodsync-v4'; // bumped to force clients to update
 // Fixed base path for GitHub Pages deployment
 const prefix = '/A-R-Moodsync';
 // Minimal shell files; hashed chunks will be dynamically cached on fetch

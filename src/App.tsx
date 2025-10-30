@@ -1,4 +1,6 @@
 import { useState, useEffect, lazy, Suspense, useMemo } from 'react';
+// Build stamp injected at runtime for cache/version diagnostics
+const BUILD_STAMP = `${new Date().toISOString()}|${import.meta.env?.MODE}|${(import.meta as any).env?.BASE_URL}`;
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { DashboardScreen } from './screens/DashboardScreen';
 import { AnalyticsScreen } from './screens/AnalyticsScreen';
@@ -22,6 +24,7 @@ interface MoodEntry { id: string; mood: string; note: string; timestamp: Date; i
 
 function AppInner() {
   useEffect(() => {
+    console.log('[MoodSync] Build stamp:', BUILD_STAMP);
     const theme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', theme);
     if (theme === 'dark') document.documentElement.classList.add('dark');

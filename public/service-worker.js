@@ -1,15 +1,15 @@
 // Service Worker (static demo aware) - versioned cache
-const CACHE_NAME = 'moodsync-v2';
-// Derive base path (GitHub Pages repository) from location pathname
-// If hosted at /A-R-Moodsync/, include that in cached paths.
-const BASE_PATH = self.location.pathname.split('/').slice(0,2).join('/'); // "" or "A-R-Moodsync"
-const prefix = BASE_PATH ? `/${BASE_PATH}` : '';
+const CACHE_NAME = 'moodsync-v3';
+// Fixed base path for GitHub Pages deployment
+const prefix = '/A-R-Moodsync';
 // Minimal shell files; hashed chunks will be dynamically cached on fetch
 const urlsToCache = [
   `${prefix}/`,
   `${prefix}/index.html`,
   `${prefix}/manifest.json`,
-  // Icons
+  // Icons (both .svg and .png for fallback)
+  `${prefix}/icon-192.svg`,
+  `${prefix}/icon-512.svg`,
   `${prefix}/icon-192.png`,
   `${prefix}/icon-512.png`
 ];

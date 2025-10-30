@@ -38,6 +38,7 @@ export function MobileBottomNav({ currentScreen, onNavigate }: MobileBottomNavPr
               key={item.id}
               onClick={() => onNavigate(item.id)}
               className="flex flex-col items-center justify-center gap-1 relative"
+              data-testid={`mobile-nav-${item.id}`}
             >
               {/* Active indicator */}
               {isActive && (

@@ -36,6 +36,7 @@ export function TeamsLayout({ children, userName }: TeamsLayoutProps) {
                 className={"teams-rail-btn" + (active ? ' active' : '')}
                 onClick={() => navigate(item.path)}
                 aria-label={item.label}
+                data-testid={`nav-${item.id}`}
               >
                 <Icon size={20} />
                 <span className="teams-rail-tooltip">{item.label}</span>

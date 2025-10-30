@@ -136,6 +136,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => setLoginEmail(e.target.value)}
                       required
                       className="h-12"
+                      data-testid="login-email"
                     />
                   </div>
                   <div className="space-y-2">
@@ -148,9 +149,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => setLoginPassword(e.target.value)}
                       required
                       className="h-12"
+                      data-testid="login-password"
                     />
                   </div>
-                  <Button type="submit" className="w-full h-12" disabled={isLoading}>
+                  <Button type="submit" className="w-full h-12" disabled={isLoading} data-testid="login-submit">
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -188,6 +190,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => setSignupName(e.target.value)}
                       required
                       className="h-12"
+                      data-testid="signup-name"
                     />
                   </div>
                   <div className="space-y-2">
@@ -200,6 +203,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => setSignupEmail(e.target.value)}
                       required
                       className="h-12"
+                      data-testid="signup-email"
                     />
                   </div>
                   <div className="space-y-2">
@@ -212,9 +216,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => setSignupPassword(e.target.value)}
                       required
                       className="h-12"
+                      data-testid="signup-password"
                     />
                   </div>
-                  <Button type="submit" className="w-full h-12" disabled={isLoading}>
+                  <Button type="submit" className="w-full h-12" disabled={isLoading} data-testid="signup-submit">
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />

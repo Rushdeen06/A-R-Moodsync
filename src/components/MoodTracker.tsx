@@ -75,6 +75,7 @@ export function MoodTracker({ onAddEntry }: MoodTrackerProps) {
                     className={`p-5 rounded-xl border-2 transition-all ${mood.color} ${
                       selectedMood === mood.value ? 'ring-2 ring-offset-2 ring-purple-500 scale-105 shadow-lg' : ''
                     }`}
+                    data-testid={`mood-option-${mood.value}`}
                   >
                     <motion.div 
                       className="text-4xl mb-2"
@@ -125,7 +126,7 @@ export function MoodTracker({ onAddEntry }: MoodTrackerProps) {
             </div>
 
             <motion.div whileTap={{ scale: 0.98 }}>
-              <Button type="submit" className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600" size="lg">
+              <Button type="submit" className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600" size="lg" data-testid="mood-submit">
                 Log Mood ✨
               </Button>
             </motion.div>

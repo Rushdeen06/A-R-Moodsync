@@ -45,6 +45,23 @@ A       @       185.199.110.153
 A       @       185.199.111.153
 ```
 
+### Optional IPv6 Support (AAAA Records)
+
+If your registrar supports IPv6 (recommended for global reach), also add these **AAAA Records**:
+
+```
+Type    Name    Value
+----    ----    -----
+AAAA    @       2606:50c0:8000::153
+AAAA    @       2606:50c0:8001::153
+AAAA    @       2606:50c0:8002::153
+AAAA    @       2606:50c0:8003::153
+```
+
+Notes:
+- Add all four to ensure GitHub's anycast network can serve your site over IPv6.
+- If on Cloudflare, you may leave them out and let Cloudflare proxy IPv6; otherwise add them directly.
+
 ### For WWW Subdomain (www.armoodsync.com)
 
 Add this **CNAME Record**:

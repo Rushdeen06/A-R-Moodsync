@@ -26,9 +26,11 @@ export function MobileLoginScreen({ onLogin }: MobileLoginScreenProps) {
     // Auto-login for demo users
     setIsLoading(true);
     try {
-      const data = await api.signin(demoEmail, demoPassword);
-      toast.success('Welcome to MoodSync! 🎉');
-      onLogin(data.user.name, data.user.email, data.access_token);
+  const data = await api.signin(demoEmail, demoPassword);
+  const userName = data?.user?.name || demoEmail.split('@')[0];
+  const userEmail = data?.user?.email || demoEmail;
+  toast.success('Welcome to MoodSync! 🎉');
+  onLogin(userName, userEmail, data.access_token);
     } catch (error) {
       console.error('Demo login error:', error);
       toast.error('Demo account not ready yet. Please try again in a moment.', {
@@ -65,8 +67,10 @@ export function MobileLoginScreen({ onLogin }: MobileLoginScreenProps) {
           await api.signup(email, password, name);
           // If signup succeeds, sign in
           const data = await api.signin(email, password);
+          const userName = data?.user?.name || email.split('@')[0];
+          const userEmail = data?.user?.email || email;
           toast.success('Welcome to MoodSync! 🎉');
-          onLogin(data.user.name, data.user.email, data.access_token);
+          onLogin(userName, userEmail, data.access_token);
         } catch (signupError) {
           // Check if user already exists
           const errorMessage = signupError instanceof Error ? signupError.message : '';
@@ -83,9 +87,11 @@ export function MobileLoginScreen({ onLogin }: MobileLoginScreenProps) {
           }
         }
       } else {
-        const data = await api.signin(email, password);
-        toast.success('Welcome back! 🎉');
-        onLogin(data.user.name, data.user.email, data.access_token);
+  const data = await api.signin(email, password);
+  const userName = data?.user?.name || email.split('@')[0];
+  const userEmail = data?.user?.email || email;
+  toast.success('Welcome back! 🎉');
+  onLogin(userName, userEmail, data.access_token);
       }
     } catch (error) {
       console.error('Auth error:', error);

@@ -1,1 +1,0 @@
-import{r as t}from"./react-TREEgIqT.js";const o=t.createContext({theme:"light",toggleTheme:()=>{}}),s=()=>{const e=t.useContext(o);if(!e)throw new Error("useTheme must be used within a ThemeProvider");return e};export{s as u};

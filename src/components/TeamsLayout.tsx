@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Home, TrendingUp, Calendar, Brain, Users, User, Wind } from 'lucide-react';
+import { Home, TrendingUp, Calendar, Brain, Users, User, Wind, Award, FileText, Settings, UsersRound, Shield } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface TeamsLayoutProps {
@@ -13,6 +13,10 @@ const NAV_ITEMS = [
   { id: 'history', icon: Calendar, label: 'History', path: '/history' },
   { id: 'insights', icon: Brain, label: 'Insights', path: '/insights' },
   { id: 'social', icon: Users, label: 'Social', path: '/social' },
+  { id: 'team', icon: UsersRound, label: 'Team Board', path: '/team' },
+  { id: 'achievements', icon: Award, label: 'Achievements', path: '/achievements' },
+  { id: 'reports', icon: FileText, label: 'Reports', path: '/reports' },
+  { id: 'settings', icon: Settings, label: 'Settings', path: '/settings' },
   { id: 'profile', icon: User, label: 'Profile', path: '/profile' },
 ];
 

@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Home, TrendingUp, Calendar, User, Brain, Users } from 'lucide-react';
+import { Home, TrendingUp, Award, User, FileText, Settings } from 'lucide-react';
 
 interface MobileBottomNavProps {
   currentScreen: string;
@@ -7,13 +7,12 @@ interface MobileBottomNavProps {
 }
 
 const NAV_ITEMS = [
-  { id: 'home', icon: Home, label: 'Home' },
-  { id: 'social', icon: Calendar, label: 'Social' },
+  { id: 'dashboard', icon: Home, label: 'Home' },
   { id: 'analytics', icon: TrendingUp, label: 'Analytics' },
-  { id: 'insights', icon: Brain, label: 'Insights' },
-  { id: 'social', icon: Users, label: 'Social' },
+  { id: 'achievements', icon: Award, label: 'Rewards' },
+  { id: 'reports', icon: FileText, label: 'Reports' },
+  { id: 'settings', icon: Settings, label: 'Settings' },
   { id: 'profile', icon: User, label: 'Profile' },
-  { id: 'admin', icon: Users, label: 'Admin' }, // TEMPORARY: For testing only - remove before production
 ];
 
 export function MobileBottomNav({ currentScreen, onNavigate }: MobileBottomNavProps) {

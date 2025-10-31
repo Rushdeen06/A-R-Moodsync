@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense, useMemo } from 'react';
 // Build stamp injected at runtime for cache/version diagnostics
-const BUILD_STAMP = `${new Date().toISOString()}|${import.meta.env?.MODE}|${(import.meta as any).env?.BASE_URL}`;
+const BUILD_STAMP = `${new Date().toISOString()}|${(import.meta as any).env?.MODE}|${(import.meta as any).env?.BASE_URL}`;
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { DashboardScreen } from './screens/DashboardScreen';
 import { AnalyticsScreen } from './screens/AnalyticsScreen';
@@ -9,11 +9,6 @@ import { InsightsScreen } from './screens/InsightsScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { SocialBoardScreen } from './screens/SocialBoardScreen';
 import { BreathingScreen } from './screens/BreathingScreen';
-import { TeamScreen } from './screens/TeamScreen';
-import { ManagerScreen } from './screens/ManagerScreen';
-import { AchievementsScreen } from './screens/AchievementsScreen';
-import { ReportsScreen } from './screens/ReportsScreen';
-import { SettingsScreen } from './screens/SettingsScreen';
 import { TeamsLayout } from './components/TeamsLayout';
 import { MobileBottomNav } from './components/mobile/MobileBottomNav';
 import { InstallPrompt } from './components/InstallPrompt';
@@ -100,7 +95,8 @@ function AppInner() {
   if (loading) return <div className='flex items-center justify-center min-h-screen'><Loader2 className='h-12 w-12 animate-spin' /></div>;
 
   const path = location.pathname.replace(/^\//,'') || 'dashboard';
-  const mainScreens = ['dashboard','analytics','history','insights','profile','social','team','manager','achievements','reports','settings'];
+  // Original main screens before expanded feature set
+  const mainScreens = ['dashboard','analytics','history','insights','profile','social'];
   const showBottomNav = mainScreens.includes(path);
 
   return (
@@ -117,21 +113,10 @@ function AppInner() {
               <Route path='/profile' element={<ProfileScreen userName={user!.name} userEmail={user!.email} totalEntries={entries.length} currentStreak={currentStreak} onLogout={handleLogout} entries={entries} />} />
               <Route path='/breathing' element={<BreathingScreen onComplete={()=>navigate('/')} />} />
               <Route path='/social' element={<SocialBoardScreen entries={entries} />} />
-              <Route path='/team' element={<TeamScreen entries={entries} />} />
-              <Route path='/manager' element={<ManagerScreen entries={entries} />} />
-              <Route path='/achievements' element={<AchievementsScreen totalEntries={entries.length} currentStreak={currentStreak} entries={entries} />} />
-              <Route path='/reports' element={<ReportsScreen entries={entries} userName={user!.name} currentStreak={currentStreak} />} />
-              <Route path='/settings' element={<SettingsScreen entries={entries} userName={user!.name} currentStreak={currentStreak} currentMood={entries[0]?.mood || 'okay'} />} />
             </Routes>
           </TeamsLayout>
         </div>
         <div className='mobile-only'>
-            <Route path='/team' element={<TeamScreen entries={entries} />} />
-            <Route path='/manager' element={<ManagerScreen entries={entries} />} />
-            <Route path='/achievements' element={<AchievementsScreen totalEntries={entries.length} currentStreak={currentStreak} entries={entries} />} />
-            <Route path='/reports' element={<ReportsScreen entries={entries} userName={user!.name} currentStreak={currentStreak} />} />
-            <Route path='/settings' element={<SettingsScreen entries={entries} userName={user!.name} currentStreak={currentStreak} currentMood={entries[0]?.mood || 'okay'} />} />
-          <div className='pl-20 pt-4 pb-16'>
           <Routes>
             <Route path='/' element={<DashboardScreen entries={entries} onSubmitMood={handleMoodSubmit} currentStreak={currentStreak} userName={user!.name} onNavigate={(s)=>navigate('/'+(s==='dashboard'?'':s))} />} />
             <Route path='/analytics' element={<AnalyticsScreen entries={entries} />} />
@@ -140,13 +125,7 @@ function AppInner() {
             <Route path='/profile' element={<ProfileScreen userName={user!.name} userEmail={user!.email} totalEntries={entries.length} currentStreak={currentStreak} onLogout={handleLogout} entries={entries} />} />
             <Route path='/breathing' element={<BreathingScreen onComplete={()=>navigate('/')} />} />
             <Route path='/social' element={<SocialBoardScreen entries={entries} />} />
-            <Route path='/team' element={<TeamScreen entries={entries} />} />
-            <Route path='/manager' element={<ManagerScreen entries={entries} />} />
-            <Route path='/achievements' element={<AchievementsScreen totalEntries={entries.length} currentStreak={currentStreak} entries={entries} />} />
-            <Route path='/reports' element={<ReportsScreen entries={entries} userName={user!.name} currentStreak={currentStreak} />} />
-            <Route path='/settings' element={<SettingsScreen entries={entries} userName={user!.name} currentStreak={currentStreak} currentMood={entries[0]?.mood || 'okay'} />} />
           </Routes>
-          </div>
           {showBottomNav && <MobileBottomNav currentScreen={path} onNavigate={(s)=>navigate('/'+(s==='dashboard'?'':s))} />}
         </div>
       </div>

@@ -17,71 +17,49 @@ const NAV_ITEMS = [
 
 export function MobileBottomNav({ currentScreen, onNavigate }: MobileBottomNavProps) {
   return (
-    <motion.div 
-      initial={{ y: 100 }}
-      animate={{ y: 0 }}
-      className="fixed bottom-0 left-0 right-0 z-50 pb-safe backdrop-blur-md"
-      style={{ 
-        backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-        borderTop: '1px solid rgba(232, 246, 248, 0.5)',
-        boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.05)' 
+    <motion.nav
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      className="fixed top-0 left-0 z-50 h-full w-16 backdrop-blur-md flex flex-col py-4"
+      style={{
+        backgroundColor: 'rgba(32,35,41,0.92)',
+        borderRight: '1px solid rgba(60,70,80,0.4)',
+        boxShadow: '2px 0 8px -2px rgba(0,0,0,0.4)'
       }}
+      data-testid="mobile-side-nav"
     >
-  <div className="grid grid-cols-6 h-16">
-        {NAV_ITEMS.map((item) => {
+      <div className="flex-1 flex flex-col items-center gap-2 overflow-y-auto">
+        {NAV_ITEMS.map(item => {
           const Icon = item.icon;
           const isActive = currentScreen === item.id;
-          
           return (
-            <button
+            <motion.button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className="flex flex-col items-center justify-center gap-1 relative"
+              whileTap={{ scale: 0.9 }}
+              className={
+                'relative flex flex-col items-center justify-center w-14 h-14 rounded-xl transition-colors ' +
+                (isActive
+                  ? 'bg-teal-600 text-white shadow-lg'
+                  : 'text-gray-400 hover:bg-gray-700/40 hover:text-gray-200')
+              }
               data-testid={`mobile-nav-${item.id}`}
             >
-              {/* Active indicator */}
               {isActive && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full"
-                  style={{ backgroundColor: '#4FB3C5' }}
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                <motion.span
+                  layoutId="mobileActiveGlow"
+                  className="absolute inset-0 rounded-xl ring-2 ring-teal-300/60"
+                  transition={{ type: 'spring', stiffness: 260, damping: 20 }}
                 />
               )}
-              
-              {/* Icon */}
-              <motion.div
-                animate={{
-                  scale: isActive ? 1.1 : 1,
-                  y: isActive ? -2 : 0,
-                }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              >
-                <Icon 
-                  className="w-5 h-5" 
-                  style={{ 
-                    color: isActive ? '#4FB3C5' : '#A8C9C7',
-                    strokeWidth: isActive ? 2.5 : 2,
-                  }} 
-                />
-              </motion.div>
-              
-              {/* Label */}
-              <span 
-                className="text-xs"
-                style={{ 
-                  color: isActive ? '#2D7A8B' : '#A8C9C7',
-                  fontWeight: isActive ? 600 : 400,
-                }}
-              >
+              <Icon className="w-5 h-5" />
+              <span className="text-[10px] mt-1 font-medium tracking-wide">
                 {item.label}
               </span>
-              
-              {/* Removed social unread badge in simplified app */}
-            </button>
+            </motion.button>
           );
-          })}
-        </div>
-      </motion.div>
-    );
-  }
+        })}
+      </div>
+    </motion.nav>
+  );
+}

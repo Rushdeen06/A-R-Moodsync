@@ -131,6 +131,7 @@ function AppInner() {
             <Route path='/achievements' element={<AchievementsScreen totalEntries={entries.length} currentStreak={currentStreak} entries={entries} />} />
             <Route path='/reports' element={<ReportsScreen entries={entries} userName={user!.name} currentStreak={currentStreak} />} />
             <Route path='/settings' element={<SettingsScreen entries={entries} userName={user!.name} currentStreak={currentStreak} currentMood={entries[0]?.mood || 'okay'} />} />
+          <div className='pl-20 pt-4 pb-16'>
           <Routes>
             <Route path='/' element={<DashboardScreen entries={entries} onSubmitMood={handleMoodSubmit} currentStreak={currentStreak} userName={user!.name} onNavigate={(s)=>navigate('/'+(s==='dashboard'?'':s))} />} />
             <Route path='/analytics' element={<AnalyticsScreen entries={entries} />} />
@@ -139,7 +140,13 @@ function AppInner() {
             <Route path='/profile' element={<ProfileScreen userName={user!.name} userEmail={user!.email} totalEntries={entries.length} currentStreak={currentStreak} onLogout={handleLogout} entries={entries} />} />
             <Route path='/breathing' element={<BreathingScreen onComplete={()=>navigate('/')} />} />
             <Route path='/social' element={<SocialBoardScreen entries={entries} />} />
+            <Route path='/team' element={<TeamScreen entries={entries} />} />
+            <Route path='/manager' element={<ManagerScreen entries={entries} />} />
+            <Route path='/achievements' element={<AchievementsScreen totalEntries={entries.length} currentStreak={currentStreak} entries={entries} />} />
+            <Route path='/reports' element={<ReportsScreen entries={entries} userName={user!.name} currentStreak={currentStreak} />} />
+            <Route path='/settings' element={<SettingsScreen entries={entries} userName={user!.name} currentStreak={currentStreak} currentMood={entries[0]?.mood || 'okay'} />} />
           </Routes>
+          </div>
           {showBottomNav && <MobileBottomNav currentScreen={path} onNavigate={(s)=>navigate('/'+(s==='dashboard'?'':s))} />}
         </div>
       </div>

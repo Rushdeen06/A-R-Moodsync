@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Plus, Trash2, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 
+// Local enriched trigger type aligning with optional workspace extension fields
 interface MoodTrigger {
   id: string;
   name: string;
@@ -35,9 +36,9 @@ export function MoodTriggers({ triggers, entries, onAddTrigger, onDeleteTrigger 
   const [isAdding, setIsAdding] = useState(false);
   const [filterType, setFilterType] = useState<'all' | 'positive' | 'negative' | 'neutral'>('all');
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{ name: string; type: 'positive' | 'negative' | 'neutral'; category: string; notes: string }>({
     name: '',
-    type: 'neutral' as const,
+    type: 'neutral',
     category: 'Work',
     notes: '',
   });
@@ -63,7 +64,7 @@ export function MoodTriggers({ triggers, entries, onAddTrigger, onDeleteTrigger 
     });
 
     const suggestions = Array.from(commonWords.entries())
-      .filter(([word, count]) => count >= 2)
+      .filter(([, count]) => count >= 2)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([word]) => word);
@@ -92,7 +93,7 @@ export function MoodTriggers({ triggers, entries, onAddTrigger, onDeleteTrigger 
       notes: formData.notes,
     });
 
-    setFormData({ name: '', type: 'neutral', category: 'Work', notes: '' });
+  setFormData({ name: '', type: 'neutral', category: 'Work', notes: '' });
     setIsAdding(false);
   };
 

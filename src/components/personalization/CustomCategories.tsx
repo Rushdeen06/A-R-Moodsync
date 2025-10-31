@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit2, Trash2, Save, X, Palette } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 
+// Local shape extends core type with required keywords for this UI usage
 interface CustomMoodCategory {
   id: string;
   name: string;

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Home, TrendingUp, Calendar, Brain, Users, User, Wind, Award, FileText, Settings, UsersRound, Shield } from 'lucide-react';
+import { Home, TrendingUp, Calendar, Brain, Users, User, Wind, Award, FileText, Settings, UsersRound } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface TeamsLayoutProps {

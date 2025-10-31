@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Award, Trophy, Target, Zap, Calendar, Star, Lock } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Award, Trophy, Zap, Star } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Achievement } from '../../types/workspace';
 import { Badge } from '../ui/badge';
 

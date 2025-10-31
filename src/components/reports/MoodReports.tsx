@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { FileText, Download, Calendar, TrendingUp, BarChart3, PieChart as PieChartIcon } from 'lucide-react';
+import { FileText, Download, Calendar, TrendingUp, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 
 interface MoodEntry {

@@ -1,6 +1,6 @@
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Button } from '../ui/button';
-import { Menu, TrendingUp, Flame, Calendar, Heart, Sparkles, ChevronRight } from 'lucide-react';
+import { TrendingUp, Flame, Calendar, Heart, Sparkles, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface MobileHomeProps {
@@ -8,7 +8,6 @@ interface MobileHomeProps {
   todaySuggestion: string;
   onLogMood: () => void;
   onViewSocial: () => void;
-  onMenuClick: () => void;
   totalEntries?: number;
   currentStreak?: number;
   weekMoodAverage?: number;
@@ -19,7 +18,6 @@ export function MobileHome({
   todaySuggestion, 
   onLogMood, 
   onViewSocial,
-  onMenuClick,
   totalEntries = 0,
   currentStreak = 0,
   weekMoodAverage = 3.5

@@ -75,7 +75,7 @@ const EVENT_TYPE_COLORS: Record<string, string> = {
   other: 'bg-gray-100 text-gray-700',
 };
 
-export function CalendarSync({ entries, onConnectCalendar }: CalendarSyncProps) {
+export function CalendarSync({ onConnectCalendar }: CalendarSyncProps) {
   const [isConnected] = useState(false); // Would be true if user has connected calendar
   const [events] = useState<CalendarEvent[]>(MOCK_EVENTS);
 

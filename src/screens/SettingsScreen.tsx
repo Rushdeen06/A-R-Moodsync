@@ -32,17 +32,20 @@ export function SettingsScreen({ entries, userName, currentStreak, currentMood }
     const saved = localStorage.getItem('moodsync_triggers');
     return saved ? JSON.parse(saved).map((t: any) => ({
       ...t,
-      lastOccurrence: new Date(t.lastOccurrence),
-      createdAt: new Date(t.createdAt),
+      lastOccurred: t.lastOccurred ? new Date(t.lastOccurred) : new Date(),
+      createdAt: t.createdAt ? new Date(t.createdAt) : new Date(),
     })) : [];
   });
 
-  const handleAddCategory = (category: Omit<CustomMoodCategory, 'id' | 'createdAt'>) => {
+  const handleAddCategory = (category: Omit<CustomMoodCategory, 'id' | 'createdAt' | 'userId'>) => {
     const newCategory: CustomMoodCategory = {
       ...category,
       id: Date.now().toString(),
+      userId: userName,
       createdAt: new Date(),
-    };
+      // If keywords omitted default to empty array
+      ...(category as any).keywords ? { keywords: (category as any).keywords } : { keywords: [] },
+    } as CustomMoodCategory;
     const updated = [...categories, newCategory];
     setCategories(updated);
     localStorage.setItem('moodsync_custom_categories', JSON.stringify(updated));
@@ -60,14 +63,19 @@ export function SettingsScreen({ entries, userName, currentStreak, currentMood }
     localStorage.setItem('moodsync_custom_categories', JSON.stringify(updated));
   };
 
-  const handleAddTrigger = (trigger: Omit<MoodTrigger, 'id' | 'createdAt' | 'occurrences' | 'lastOccurrence'>) => {
+  const handleAddTrigger = (trigger: Omit<MoodTrigger, 'id' | 'createdAt' | 'occurrences' | 'lastOccurred'>) => {
     const newTrigger: MoodTrigger = {
       ...trigger,
       id: Date.now().toString(),
       createdAt: new Date(),
       occurrences: 1,
-      lastOccurrence: new Date(),
-    };
+      lastOccurred: new Date(),
+      userId: userName,
+      // Fallbacks if personalization fields provided differently
+      trigger: (trigger as any).trigger || (trigger as any).name || 'trigger',
+      mood: (trigger as any).mood || currentMood,
+      frequency: (trigger as any).frequency || 1,
+    } as MoodTrigger;
     const updated = [...triggers, newTrigger];
     setTriggers(updated);
     localStorage.setItem('moodsync_triggers', JSON.stringify(updated));
@@ -124,18 +132,18 @@ export function SettingsScreen({ entries, userName, currentStreak, currentMood }
 
       {activeTab === 'categories' && (
         <CustomCategories
-          categories={categories}
-          onAddCategory={handleAddCategory}
-          onUpdateCategory={handleUpdateCategory}
+          categories={categories as any}
+          onAddCategory={handleAddCategory as any}
+          onUpdateCategory={handleUpdateCategory as any}
           onDeleteCategory={handleDeleteCategory}
         />
       )}
 
       {activeTab === 'triggers' && (
         <MoodTriggers
-          triggers={triggers}
-          entries={entries}
-          onAddTrigger={handleAddTrigger}
+          triggers={triggers as any}
+          entries={entries as any}
+          onAddTrigger={handleAddTrigger as any}
           onDeleteTrigger={handleDeleteTrigger}
         />
       )}

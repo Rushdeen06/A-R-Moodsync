@@ -78,14 +78,22 @@ export interface CustomMoodCategory {
   name: string;
   emoji: string;
   color: string;
+  keywords?: string[]; // optional keywords used by personalization components
   createdAt: Date;
 }
 
 export interface MoodTrigger {
   id: string;
   userId: string;
-  mood: string;
-  trigger: string;
-  frequency: number;
-  lastOccurred: Date;
+  mood: string; // mood associated when trigger occurs
+  trigger: string; // description/name of trigger
+  frequency: number; // how often it occurs
+  lastOccurred: Date; // last occurrence timestamp
+  // Extended fields used by personalization UI (optional for basic workspace model)
+  name?: string;
+  type?: 'positive' | 'negative' | 'neutral';
+  category?: string;
+  notes?: string;
+  occurrences?: number;
+  createdAt?: Date;
 }

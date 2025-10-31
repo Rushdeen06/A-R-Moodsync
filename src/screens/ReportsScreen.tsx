@@ -15,7 +15,7 @@ interface ReportsScreenProps {
 
 export function ReportsScreen({ entries, userName, currentStreak }: ReportsScreenProps) {
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto px-4 py-6 max-w-7xl app-surface rounded-xl" data-testid="reports-screen">
       <MoodReports entries={entries} userName={userName} currentStreak={currentStreak} />
     </div>
   );

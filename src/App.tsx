@@ -30,7 +30,11 @@ interface MoodEntry { id: string; mood: string; note: string; timestamp: Date; i
 function AppInner() {
   useEffect(() => {
     console.log('[MoodSync] Build stamp:', BUILD_STAMP);
-    const theme = localStorage.getItem('theme') || 'light';
+    let theme = localStorage.getItem('theme');
+    if (!theme) {
+      theme = 'dark';
+      localStorage.setItem('theme', theme);
+    }
     document.documentElement.setAttribute('data-theme', theme);
     if (theme === 'dark') document.documentElement.classList.add('dark');
   }, []);

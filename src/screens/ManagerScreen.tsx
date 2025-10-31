@@ -44,7 +44,7 @@ export function ManagerScreen({ entries }: ManagerScreenProps) {
   });
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto px-4 py-6 max-w-7xl app-surface rounded-xl" data-testid="manager-screen">
       <ManagerDashboard entries={teamEntries} teamMembers={teamMembers} />
     </div>
   );

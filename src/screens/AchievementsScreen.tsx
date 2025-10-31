@@ -40,7 +40,7 @@ export function AchievementsScreen({ totalEntries, currentStreak, entries }: Ach
   });
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto px-4 py-6 max-w-7xl app-surface rounded-xl" data-testid="achievements-screen">
       {/* Tab Navigation */}
       <div className="flex gap-2 mb-6">
         <button

@@ -27,7 +27,7 @@ export function TeamScreen({ entries }: TeamScreenProps) {
   }));
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto px-4 py-6 max-w-7xl app-surface rounded-xl" data-testid="team-screen">
       <TeamMoodBoard entries={teamEntries} />
     </div>
   );

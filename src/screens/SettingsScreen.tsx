@@ -87,7 +87,7 @@ export function SettingsScreen({ entries, userName, currentStreak, currentMood }
   ] as const;
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto px-4 py-6 max-w-7xl app-surface rounded-xl" data-testid="settings-screen">
       {/* Tab Navigation */}
       <div className="flex gap-2 mb-6 overflow-x-auto">
         {tabs.map(tab => (

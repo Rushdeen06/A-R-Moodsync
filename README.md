@@ -89,7 +89,7 @@ Internal prototype – licensing TBD.
 You now have two ways to deploy updates:
 
 ### 1. Automatic (Recommended)
-Push commits to the `main` branch. A GitHub Action (`.github/workflows/deploy.yml`) will:
+Push commits to the `main` branch. The included GitHub Action (`.github/workflows/deploy.yml`) will:
 1. Install dependencies
 2. Build the production bundle (Vite)
 3. Copy `index.html` to `404.html` for SPA routing
@@ -120,7 +120,7 @@ If you re-enable the service worker (`public/service-worker.js`), increment `CAC
 ### Troubleshooting Updates
 | Symptom | Fix |
 | ------- | --- |
-| Old UI after deploy | Hard refresh (Ctrl+F5) or clear site data; ensure Action succeeded |
+| Old UI after deploy | Hard refresh (Ctrl+F5) or clear site data; ensure Action succeeded; check Pages build artifact |
 | 404 on deep link | Verify `404.html` exists in deployed artifact (workflow creates it) |
 | Blank screen | Check console for missing asset paths; confirm Vite `base` matches repo folder `/A-R-Moodsync/` |
 | Action failed | Actions tab → deployment workflow → logs; fix build errors locally |

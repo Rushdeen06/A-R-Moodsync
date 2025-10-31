@@ -10,6 +10,54 @@ permissions:
   pages: write
   id-token: write
 
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        env:
+          NODE_ENV: production
+        run: |
+          npm run build
+          # Copy index.html to 404.html for SPA routing
+          cp build/index.html build/404.html
+          # Ensure CNAME persists
+          if [ -f public/CNAME ]; then cp public/CNAME build/CNAME; fi
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+      - name: Output URL
+        run: echo "Deployed to ${{ steps.deploy.outputs.page_url }}"name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 concurrency:
   group: pages
   cancel-in-progress: false

@@ -1,0 +1,83 @@
+// Service Worker (static demo aware) - versioned cache
+const CACHE_NAME = 'moodsync-v4'; // bumped to force clients to update
+// Fixed base path for GitHub Pages deployment
+const prefix = '/A-R-Moodsync';
+// Minimal shell files; hashed chunks will be dynamically cached on fetch
+const urlsToCache = [
+  `${prefix}/`,
+  `${prefix}/index.html`,
+  `${prefix}/manifest.json`,
+  // Icons (both .svg and .png for fallback)
+  `${prefix}/icon-192.svg`,
+  `${prefix}/icon-512.svg`,
+  `${prefix}/icon-192.png`,
+  `${prefix}/icon-512.png`
+];
+
+// Install event - cache resources
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+  console.log('[SW] Opened cache, base prefix:', prefix);
+        return cache.addAll(urlsToCache);
+      })
+      .catch((err) => {
+        console.log('Cache failed:', err);
+      })
+  );
+  self.skipWaiting();
+});
+
+// Fetch event - serve from cache, fallback to network
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        // Cache hit - return response
+        if (response) {
+          return response;
+        }
+
+        return fetch(event.request).then(
+          (response) => {
+            // Check if we received a valid response
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+
+            // Clone the response
+            const responseToCache = response.clone();
+
+            caches.open(CACHE_NAME)
+              .then((cache) => {
+                cache.put(event.request, responseToCache);
+              });
+
+            return response;
+          }
+        );
+      })
+      .catch(() => {
+        // Return offline page if available
+  return caches.match(`${prefix}/index.html`);
+      })
+  );
+});
+
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
+});

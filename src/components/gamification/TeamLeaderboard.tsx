@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react';
-import { motion } from 'motion/react';
-import { Trophy, Medal, Award, TrendingUp, Eye, EyeOff } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Trophy, Medal, TrendingUp, Eye, EyeOff } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
 import { TeamMember } from '../../types/workspace';
 
 interface LeaderboardEntry {
@@ -54,7 +53,7 @@ export function TeamLeaderboard({ teamMembers, entriesByUser, allowAnonymous = f
 
       return {
         userId: member.id,
-        userName: member.name,
+  userName: member.name,
         score,
         streak,
         totalEntries: userEntries.length,
@@ -85,7 +84,7 @@ export function TeamLeaderboard({ teamMembers, entriesByUser, allowAnonymous = f
     return 'bg-white border-gray-100';
   };
 
-  const displayName = (name: string, userId: string, rank: number) => {
+  const displayName = (name: string, userId: string) => {
     if (showAnonymous) {
       return `User ${userId.slice(0, 4)}`;
     }
@@ -138,7 +137,7 @@ export function TeamLeaderboard({ teamMembers, entriesByUser, allowAnonymous = f
               {leaderboard[1].userName.charAt(0)}
             </div>
             <Medal className="w-8 h-8 text-gray-400 mb-2" />
-            <p className="font-bold text-center">{displayName(leaderboard[1].userName, leaderboard[1].userId, 2)}</p>
+            <p className="font-bold text-center">{displayName(leaderboard[1].userName, leaderboard[1].userId)}</p>
             <p className="text-2xl font-bold text-gray-600">{leaderboard[1].score}</p>
             <p className="text-xs text-gray-500">points</p>
           </motion.div>
@@ -153,7 +152,7 @@ export function TeamLeaderboard({ teamMembers, entriesByUser, allowAnonymous = f
               {leaderboard[0].userName.charAt(0)}
             </div>
             <Trophy className="w-10 h-10 text-yellow-500 mb-2" />
-            <p className="font-bold text-center">{displayName(leaderboard[0].userName, leaderboard[0].userId, 1)}</p>
+            <p className="font-bold text-center">{displayName(leaderboard[0].userName, leaderboard[0].userId)}</p>
             <p className="text-3xl font-bold text-yellow-600">{leaderboard[0].score}</p>
             <p className="text-xs text-gray-500">points</p>
           </motion.div>
@@ -169,7 +168,7 @@ export function TeamLeaderboard({ teamMembers, entriesByUser, allowAnonymous = f
               {leaderboard[2].userName.charAt(0)}
             </div>
             <Medal className="w-8 h-8 text-orange-600 mb-2" />
-            <p className="font-bold text-center">{displayName(leaderboard[2].userName, leaderboard[2].userId, 3)}</p>
+            <p className="font-bold text-center">{displayName(leaderboard[2].userName, leaderboard[2].userId)}</p>
             <p className="text-2xl font-bold text-orange-600">{leaderboard[2].score}</p>
             <p className="text-xs text-gray-500">points</p>
           </motion.div>
@@ -206,7 +205,7 @@ export function TeamLeaderboard({ teamMembers, entriesByUser, allowAnonymous = f
                   {/* Info */}
                   <div className="flex-1">
                     <p className="font-bold text-gray-900">
-                      {displayName(entry.userName, entry.userId, entry.rank)}
+                      {displayName(entry.userName, entry.userId)}
                     </p>
                     <div className="flex gap-4 mt-1">
                       <span className="text-xs text-gray-500">

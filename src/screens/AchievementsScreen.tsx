@@ -27,16 +27,20 @@ export function AchievementsScreen({ totalEntries, currentStreak, entries }: Ach
   const uniqueUsers = Array.from(new Set(entries.map(e => e.userName || 'You')));
   const teamMembers: TeamMember[] = uniqueUsers.map((userName, idx) => {
     const userEntries = entries.filter(e => (e.userName || 'You') === userName);
-    
     return {
       id: 'user-' + idx,
-      teamId: 'default-team',
-      userId: 'user-' + idx,
-      userName,
+      name: userName,
       email: `${userName.toLowerCase().replace(/\s+/g, '.')}@company.com`,
       role: 'member',
-      joinedAt: new Date(Math.min(...userEntries.map(e => e.timestamp.getTime()))),
+      joinedDate: new Date(Math.min(...userEntries.map(e => e.timestamp.getTime()))),
     };
+  });
+
+  // Build entriesByUser map for leaderboard scoring
+  const entriesByUser: Record<string, Array<{ mood: string; timestamp: Date; intensity: number }>> = {};
+  teamMembers.forEach(member => {
+    const userEntries = entries.filter(e => (e.userName || 'You') === member.name);
+    entriesByUser[member.id] = userEntries.map(e => ({ mood: e.mood, timestamp: e.timestamp, intensity: e.intensity }));
   });
 
   return (
@@ -74,7 +78,7 @@ export function AchievementsScreen({ totalEntries, currentStreak, entries }: Ach
           insightsViewed={insightsViewed}
         />
       ) : (
-        <TeamLeaderboard members={teamMembers} entries={entries} />
+  <TeamLeaderboard teamMembers={teamMembers} entriesByUser={entriesByUser} />
       )}
     </div>
   );

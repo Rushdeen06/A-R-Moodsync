@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
-import { motion } from 'motion/react';
-import { Users, TrendingUp, Award, Target, Calendar, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Users, TrendingUp, Target, Zap } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { TeamMoodEntry } from '../../types/workspace';
 
 interface TeamMoodBoardProps {
-  teamEntries: TeamMoodEntry[];
-  teamName: string;
+  entries: TeamMoodEntry[];
+  teamName?: string;
 }
 
 const MOOD_COLORS: Record<string, string> = {
@@ -25,7 +25,7 @@ const MOOD_EMOJIS: Record<string, string> = {
   'very-low': '😢',
 };
 
-export function TeamMoodBoard({ teamEntries, teamName }: TeamMoodBoardProps) {
+export function TeamMoodBoard({ entries, teamName = 'Team' }: TeamMoodBoardProps) {
   const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month'>('today');
 
   const filteredEntries = useMemo(() => {
@@ -40,8 +40,8 @@ export function TeamMoodBoard({ teamEntries, teamName }: TeamMoodBoardProps) {
       cutoff.setMonth(now.getMonth() - 1);
     }
 
-    return teamEntries.filter(e => e.timestamp >= cutoff && !e.isPrivate);
-  }, [teamEntries, timeRange]);
+    return entries.filter(e => e.timestamp >= cutoff && !e.isPrivate);
+  }, [entries, timeRange]);
 
   const teamStats = useMemo(() => {
     if (!filteredEntries.length) return null;
@@ -185,7 +185,7 @@ export function TeamMoodBoard({ teamEntries, teamName }: TeamMoodBoardProps) {
       <Card>
         <CardHeader>
           <CardTitle>Recent Team Moods</CardTitle>
-          <CardDescription>Latest mood check-ins from your team</CardDescription>
+      <CardDescription>Latest mood check-ins from your team</CardDescription>
         </CardHeader>
         <CardContent>
           {filteredEntries.length > 0 ? (

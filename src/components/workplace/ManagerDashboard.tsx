@@ -1,17 +1,17 @@
 import { useMemo } from 'react';
-import { motion } from 'motion/react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
+import { motion } from 'framer-motion';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 import { TrendingUp, TrendingDown, AlertCircle, CheckCircle, Clock, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { TeamMoodEntry, TeamMember } from '../../types/workspace';
 
 interface ManagerDashboardProps {
-  teamEntries: TeamMoodEntry[];
+  entries: TeamMoodEntry[];
   teamMembers: TeamMember[];
-  teamName: string;
+  teamName?: string;
 }
 
-export function ManagerDashboard({ teamEntries, teamMembers, teamName }: ManagerDashboardProps) {
+export function ManagerDashboard({ entries, teamMembers, teamName = 'Team' }: ManagerDashboardProps) {
   const last7Days = useMemo(() => {
     const days = [];
     const now = new Date();
@@ -21,7 +21,7 @@ export function ManagerDashboard({ teamEntries, teamMembers, teamName }: Manager
       date.setDate(date.getDate() - i);
       date.setHours(0, 0, 0, 0);
       
-      const dayEntries = teamEntries.filter(e => {
+  const dayEntries = entries.filter(e => {
         const entryDate = new Date(e.timestamp);
         entryDate.setHours(0, 0, 0, 0);
         return entryDate.getTime() === date.getTime() && !e.isPrivate;
@@ -39,7 +39,7 @@ export function ManagerDashboard({ teamEntries, teamMembers, teamName }: Manager
     }
     
     return days;
-  }, [teamEntries]);
+  }, [entries]);
 
   const wellbeingAlerts = useMemo(() => {
     const alerts: Array<{ type: 'warning' | 'info'; message: string; userName: string }> = [];
@@ -47,7 +47,7 @@ export function ManagerDashboard({ teamEntries, teamMembers, teamName }: Manager
     recentCutoff.setHours(recentCutoff.getHours() - 48);
 
     // Check for team members with low moods
-    const recentLowMoods = teamEntries.filter(
+  const recentLowMoods = entries.filter(
       e => e.timestamp >= recentCutoff && (e.mood === 'low' || e.mood === 'very-low') && !e.isPrivate
     );
 
@@ -68,7 +68,7 @@ export function ManagerDashboard({ teamEntries, teamMembers, teamName }: Manager
 
     // Check for inactive members
     const activeUsers = new Set(
-      teamEntries.filter(e => e.timestamp >= recentCutoff).map(e => e.userName)
+      entries.filter(e => e.timestamp >= recentCutoff).map(e => e.userName)
     );
     
     teamMembers.forEach(member => {
@@ -82,14 +82,14 @@ export function ManagerDashboard({ teamEntries, teamMembers, teamName }: Manager
     });
 
     return alerts;
-  }, [teamEntries, teamMembers]);
+  }, [entries, teamMembers]);
 
   const teamEngagement = useMemo(() => {
     const last7DaysCutoff = new Date();
     last7DaysCutoff.setDate(last7DaysCutoff.getDate() - 7);
     
     const activeMembers = new Set(
-      teamEntries.filter(e => e.timestamp >= last7DaysCutoff).map(e => e.userName)
+      entries.filter(e => e.timestamp >= last7DaysCutoff).map(e => e.userName)
     );
 
     const engagementRate = teamMembers.length
@@ -101,7 +101,7 @@ export function ManagerDashboard({ teamEntries, teamMembers, teamName }: Manager
       totalMembers: teamMembers.length,
       engagementRate: Number(engagementRate),
     };
-  }, [teamEntries, teamMembers]);
+  }, [entries, teamMembers]);
 
   const moodTrend = useMemo(() => {
     if (last7Days.length < 2) return 'stable';

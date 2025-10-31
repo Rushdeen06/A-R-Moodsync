@@ -30,22 +30,19 @@ export function ManagerScreen({ entries }: ManagerScreenProps) {
   const uniqueUsers = Array.from(new Set(teamEntries.map(e => e.userId)));
   const teamMembers: TeamMember[] = uniqueUsers.map(userId => {
     const userEntries = teamEntries.filter(e => e.userId === userId);
-    const userName = userEntries[0]?.userName || 'Team Member';
-    
+    const name = userEntries[0]?.userName || 'Team Member';
     return {
       id: userId,
-      teamId: 'default-team',
-      userId,
-      userName,
-      email: `${userName.toLowerCase().replace(/\s+/g, '.')}@company.com`,
+      name,
+      email: `${name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
       role: 'member',
-      joinedAt: new Date(Math.min(...userEntries.map(e => e.timestamp.getTime()))),
+      joinedDate: new Date(Math.min(...userEntries.map(e => e.timestamp.getTime()))),
     };
   });
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl app-surface rounded-xl" data-testid="manager-screen">
-      <ManagerDashboard entries={teamEntries} teamMembers={teamMembers} />
+  <ManagerDashboard entries={teamEntries} teamMembers={teamMembers} teamName="Core" />
     </div>
   );
 }
